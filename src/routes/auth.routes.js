@@ -2,7 +2,7 @@ import { Router } from "express";
 import { login } from "../controllers/auth/login.js";
 import { logoutUser } from "../controllers/auth/logout.js";
 import { registerUser } from "../controllers/auth/register.js";
-import { getCurrentUser } from "../controllers/auth/getuser.js";
+import { getCurrentUser } from "../controllers/auth/getCurrentUser.js";
 import authMiddleware from "../middlewares/auth.meddleware.js";
 
 const router = Router()
