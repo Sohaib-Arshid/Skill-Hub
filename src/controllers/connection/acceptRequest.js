@@ -24,7 +24,7 @@ const acceptRequest = asyncHandler(async (req, res) => {
     )
 
     return res.status(201).json(
-        new ApiResponse(2001, acceptedrequest, "Request send successfully")
+        new ApiResponse(2001, acceptedrequest, "Request accepted successfully")
     )
 })
 
