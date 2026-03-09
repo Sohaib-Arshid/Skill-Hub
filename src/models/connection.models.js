@@ -6,7 +6,7 @@ const connnectionSchema = new mongoose.Schema({
         ref : "User",
         required : true
     },
-    reciver : {
+    receiver : {
         type : Schema.Types.ObjectId,
         ref : "User",
         required : true
