@@ -5,7 +5,7 @@ import asyncHandler from "../../utils/asyncHandler.js";
 
 const sendRequest = asyncHandler(async (req, res) => {
     const sender = req.user._id;
-    const receiver = req.perams.id
+    const receiver = req.params.id
 
     const existingRequest = await Connection.findOne({
         sender: sender,
@@ -15,6 +15,10 @@ const sendRequest = asyncHandler(async (req, res) => {
     if (existingRequest) {
         throw new ApiError(401, "Request is already send")
     }
+
+    if (sender.toString() === receiver.toString()) {
+    throw new ApiError(400, "You can not send request to yourself!")
+}
 
     const request = await Connection.create({
         sender: sender,
