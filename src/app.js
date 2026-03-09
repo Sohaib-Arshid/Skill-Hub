@@ -16,9 +16,11 @@ app.use(cookieParser())
 import router from "./routes/auth.routes.js"
 import userrouter from "./routes/user.routes.js"
 import searchRouter from "./routes/search.routes.js"
+import connectionrouter from "./routes/connection.routes.js"
 
 app.use("/api/auth", router)
 app.use("/api/user", userrouter)
 app.use("/api/search", searchRouter)
+app.use("/api/connection", connectionrouter)
 
 export default app
