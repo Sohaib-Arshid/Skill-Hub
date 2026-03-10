@@ -9,12 +9,12 @@ const updateUser = asyncHandler(async (req, res) => {
     if (!_id) {
         throw new ApiError(404, "User not found")
     }
-    const { name, bio, skills } = req.body;
+    const { name, bio, skills , password} = req.body;
     const update = await User.findByIdAndUpdate(
         _id,
-        { name, bio, skills },
+        { name, bio, skills , password },
         { new: true }
-    ).select("-password")
+    )
 
     return res.status(200).json(
         new ApiResponse(201, update, "user update successfully")
