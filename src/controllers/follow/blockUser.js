@@ -20,7 +20,6 @@ const BlockUser = asyncHandler(async (req, res) => {
         { new: true }
     )
 
-
     return res.status(200).json(
         new ApiResponse(200, blockfind, "User blocked successfully")
     )

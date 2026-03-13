@@ -12,7 +12,7 @@ const FollowUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "You can not sand follow request to yourself")
     }
 
-    const existing = await Follow.find(follower, following)
+    const existing = await Follow.findOne({follower, following})
 
     if (existing) {
         throw new ApiError(400, "Already following")
