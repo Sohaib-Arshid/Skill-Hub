@@ -1,15 +1,13 @@
-import User from "../../models/user.models.js";
 import ApiError from "../../utils/ApiError.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 import { Endors } from "../../models/endorsements.models.js";
-import { Skill } from "../../models/skill.models.js";
 
 const removeEndors = asyncHandler(async (req, res) => {
 
     const endorser = req.user._id;
-    const receiver = req.params.id;
-    const skill = req.params.skill;
+    const receiver = req.params.receiverId;
+    const skill = req.params.skillId;
 
     const endorseExist = await Endors.findOne({ endorser, receiver, skill });
 

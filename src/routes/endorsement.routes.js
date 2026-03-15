@@ -7,7 +7,7 @@ import authMiddleware from "../middlewares/auth.meddleware.js";
 const endorseRouter = Router()
 
 endorseRouter.post("/endorse/:receiverId/:skillId" , authMiddleware , endorseSkill);
-endorseRouter.delete("/endorse/:receiverId/:skillId" , authMiddleware , removeEndors);
-endorseRouter.get("/endorse/:receiverId" , getEndors);
+endorseRouter.delete("/delete/:receiverId/:skillId" , authMiddleware , removeEndors);
+endorseRouter.get("/get/:receiverId" , getEndors);
 
 export default endorseRouter

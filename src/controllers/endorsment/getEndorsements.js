@@ -5,12 +5,12 @@ import { Endors } from "../../models/endorsements.models.js";
 
 const getEndors = asyncHandler(async (req, res) => {
 
-    const receiver = req.params.userId;
+    const receiver = req.params.receiverId;
 
     const findEndors = await Endors
         .find({ receiver })
-        .populate("endorser", "fullname username")
-        .populate("skill", "name");
+        .populate("endorser", "name email")
+        .populate("skill", "name category")
 
     if (findEndors.length === 0) {
         throw new ApiError(404, "No endorsements found");

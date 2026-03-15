@@ -4,7 +4,7 @@ import ApiError from "../../utils/ApiError.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 import { Endors } from "../../models/endorsements.models.js";
-import { Skill } from "../../models/skill.models.js";
+import  Skill  from "../../models/skill.models.js";
 
 const endorseSkill = asyncHandler(async (req, res) => {
 
