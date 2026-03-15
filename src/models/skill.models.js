@@ -11,11 +11,14 @@ const skillSchema = new mongoose.Schema({
     category: {
         type: String,
         trim: true
-    }
+    },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }
 }, {
     timestamps: true
 })
 
+skillSchema.index({ name: 1 }, { unique: true })
+
 const Skill = mongoose.model("Skill", skillSchema)
 
-export { Skill }
+export default Skill
