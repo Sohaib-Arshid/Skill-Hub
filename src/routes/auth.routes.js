@@ -9,7 +9,6 @@ const router = Router()
 
 router.post("/register", registerUser)
 router.post("/login", login)
-
 router.post("/logout", authMiddleware, logoutUser)
 router.get("/me", authMiddleware, getCurrentUser)
 
