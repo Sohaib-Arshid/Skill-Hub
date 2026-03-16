@@ -20,6 +20,7 @@ import connectionrouter from "./routes/connection.routes.js"
 import followRouter from "./routes/follow.routes.js"
 import endorseRouter from "./routes/endorsement.routes.js"
 import skillRouter from "./routes/skill.routes.js"
+import messagerouter from "./routes/message.routes.js"
 
 app.use("/api/auth", router)
 app.use("/api/user", userrouter)
@@ -28,5 +29,6 @@ app.use("/api/connection", connectionrouter)
 app.use("/api/follow", followRouter)
 app.use("/api/endorsment", endorseRouter )
 app.use("/api/skill" , skillRouter)
+app.use("/api/message" , messagerouter)
 
 export default app
