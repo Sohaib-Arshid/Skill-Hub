@@ -1,11 +1,11 @@
-import  ApiError  from "../../utils/ApiError.js";
-import  ApiResponse  from "../../utils/ApiResponse.js";
-import  asyncHandler from "../../utils/asyncHandler.js";
+import ApiError from "../../utils/ApiError.js";
+import ApiResponse from "../../utils/ApiResponse.js";
+import asyncHandler from "../../utils/asyncHandler.js";
 import User from "../../models/user.models.js";
 
 const cookieOptions = {
     httpOnly: true,
-    secure: true
+    secure: true,
 }
 const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body
@@ -32,8 +32,7 @@ const login = asyncHandler(async (req, res) => {
         .cookie("accessToken", accessToken, cookieOptions)
         .cookie("refreshToken", refreshToken, cookieOptions)
         .json(new ApiResponse(200, {
-            user: { _id: user._id, name: user.name, email: user.email },
-            accessToken
+            user: { _id: user._id, name: user.name, email: user.email }
         }, "Login successful"))
 
 
