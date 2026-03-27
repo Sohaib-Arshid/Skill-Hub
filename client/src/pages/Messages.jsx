@@ -25,7 +25,7 @@ const Messages = () => {
         if (data.statusCode === 200 || data.statusCode === 201) {
           const list = data.data || [];
           const accepted = list.filter(c => c.status === 'accepted');
-          const contacts = accepted.map(c => c.sender?._id === user._id ? c.receiver : c.sender).filter(Boolean);
+          const contacts = accepted.map(c => c.sender?._id === user?._id ? c.receiver : c.sender).filter(Boolean);
           setConnections(contacts);
 
           if (initialUserId) {
@@ -149,7 +149,7 @@ const Messages = () => {
                 </div>
               ) : (
                 messages.map(msg => {
-                  const isMe = msg.sender === user._id || msg.sender?._id === user._id;
+                  const isMe = msg.sender === user?._id || msg.sender?._id === user?._id;
                   return (
                     <div key={msg._id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-[70%] rounded-2xl px-5 py-3 text-[15px] shadow-lg ${

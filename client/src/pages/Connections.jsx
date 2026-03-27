@@ -105,7 +105,7 @@ const Connections = () => {
     let list = [];
     if (activeTab === 'accepted' || activeTab === 'pending') {
        list = filteredConnections.map(conn => {
-         const isSender = conn.sender?._id === user._id;
+         const isSender = conn.sender?._id === user?._id;
          const otherUser = isSender ? conn.receiver : conn.sender;
          if (!otherUser) return null;
          
@@ -113,9 +113,9 @@ const Connections = () => {
          return { ...otherUser, connId: conn._id, status: conn.status, role: isSender ? 'sent' : 'received' };
        }).filter(Boolean);
     } else if (activeTab === 'followers') {
-       list = followers.map(f => f.follower);
+       list = followers.map(f => f.follower).filter(Boolean);
     } else if (activeTab === 'following') {
-       list = following.map(f => f.following);
+       list = following.map(f => f.following).filter(Boolean);
     }
 
     if (list.length === 0) {
@@ -137,12 +137,12 @@ const Connections = () => {
             
             <div className="px-4 -mt-8 flex flex-col items-center">
                <img 
-                 src={person.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name)}&background=1e293b&color=3b82f6`}
+                 src={person.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name || 'User')}&background=1e293b&color=3b82f6`}
                  alt={person.name}
                  className="w-16 h-16 rounded-xl border-[3px] border-[#151b2b] bg-[#1e293b] mb-3 shadow-lg group-hover:-translate-y-1 transition-transform"
                />
                <h3 className="font-bold text-slate-100 cursor-pointer hover:text-blue-400 leading-tight" onClick={() => navigate(`/profile/${person._id}`)}>
-                 {person.name}
+                 {person.name || 'Unknown User'}
                </h3>
                <p className="text-xs text-slate-500 mt-1 text-center h-4 line-clamp-1">{person.bio || "Active Professional"}</p>
                
@@ -201,7 +201,7 @@ const Connections = () => {
 
         <div className="flex overflow-x-auto space-x-2 border-b border-[#1e293b] pb-2 scrollbar-hide">
           {tabs.map(tab => {
-            const invitationsCount = tab.id === 'pending' ? filteredConnections.filter(c => c.receiver?._id === user._id).length : 0;
+            const invitationsCount = tab.id === 'pending' ? filteredConnections.filter(c => c.receiver?._id === user?._id).length : 0;
             return (
               <button
                 key={tab.id}
@@ -226,7 +226,7 @@ const Connections = () => {
         <div className="min-h-[400px]">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-32 text-blue-500">
-              <Loader2 className="w-10 h-10 animate-spin mb-4" />
+              <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
               <p className="text-slate-400 font-medium">Syncing network...</p>
             </div>
           ) : (

@@ -45,8 +45,8 @@ const Profile = () => {
         // backend might return empty array
         const list = data.data || [];
         const conn = list.find(c => 
-          (c.sender?._id === currentUser._id && c.receiver?._id === id) ||
-          (c.receiver?._id === currentUser._id && c.sender?._id === id)
+          (c.sender?._id === currentUser?._id && c.receiver?._id === id) ||
+          (c.receiver?._id === currentUser?._id && c.sender?._id === id)
         );
         if (conn) {
           setConnectionStatus(conn.status);
@@ -76,6 +76,7 @@ const Profile = () => {
       if (data.statusCode === 201 || data.statusCode === 200) {
         toast.success('Connection request sent');
         setConnectionStatus('pending');
+        fetchProfile(); // Refresh metrics instantly
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to send request');
@@ -97,6 +98,7 @@ const Profile = () => {
               setIsFollowing(true);
               toast.success('Following');
           }
+          fetchProfile(); // Refresh metrics securely
       } catch (e) {
           toast.error('Could not update follow status');
       }
