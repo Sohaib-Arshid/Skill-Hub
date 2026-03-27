@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
-import { LogIn } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -36,65 +35,62 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#f3f2ef] p-4 text-slate-800">
       <div className="w-full max-w-md">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-2">
-            Skill Hub
+        <div className="mb-6 flex justify-center">
+          <h1 className="text-4xl font-extrabold text-[#0a66c2] tracking-tighter">
+            SkillHub
           </h1>
-          <p className="text-slate-400">Sign in to continue your journey</p>
         </div>
 
-        <div className="glass-panel p-8 rounded-2xl">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="input-field"
-                placeholder="you@example.com"
-              />
-            </div>
+        <div className="bg-white p-8 rounded-xl shadow-md border border-slate-200">
+          <h2 className="text-3xl font-semibold mb-2">Sign in</h2>
+          <p className="text-slate-600 font-medium mb-6">Stay updated on your professional world</p>
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+             <div>
+               <input
+                 type="email"
+                 value={email}
+                 onChange={(e) => setEmail(e.target.value)}
+                 className="w-full border border-slate-500 rounded px-4 py-3 bg-white focus:border-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-800 transition-colors"
+                 placeholder="Email or phone"
+               />
+             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="input-field"
-                placeholder="••••••••"
-              />
-            </div>
+             <div>
+               <input
+                 type="password"
+                 value={password}
+                 onChange={(e) => setPassword(e.target.value)}
+                 className="w-full border border-slate-500 rounded px-4 py-3 bg-white focus:border-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-800 transition-colors"
+                 placeholder="Password"
+               />
+             </div>
+             
+             <p className="text-[#0a66c2] font-semibold text-sm hover:underline cursor-pointer mb-2">
+               Forgot password?
+             </p>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full flex justify-center items-center py-3"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <LogIn className="w-5 h-5 mr-2" />
-                  Sign In
-                </>
-              )}
-            </button>
+             <button
+               type="submit"
+               disabled={loading}
+               className="w-full items-center justify-center py-3.5 bg-[#0a66c2] hover:bg-[#004182] text-white font-semibold rounded-full transition-colors flex"
+             >
+               {loading ? (
+                 <div className="w-5 h-5 border-2 border-white/60 border-t-white rounded-full animate-spin" />
+               ) : (
+                 'Sign in'
+               )}
+             </button>
           </form>
 
-          <p className="mt-8 text-center text-sm text-slate-400">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-blue-500 hover:text-blue-400 font-medium transition-colors">
-              Create an account
-            </Link>
-          </p>
+          <div className="mt-8 flex items-center justify-center space-x-1">
+             <span className="text-slate-600">New to SkillHub?</span>
+             <Link to="/register" className="text-[#0a66c2] font-semibold hover:bg-[#0a66c2]/10 px-2 py-1 rounded transition-colors underline">
+               Join now
+             </Link>
+          </div>
         </div>
       </div>
     </div>

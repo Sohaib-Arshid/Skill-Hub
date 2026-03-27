@@ -12,10 +12,8 @@ const getConnection = asyncHandler(async (req, res) => {
             { receiver: userId }
         ]
     })
-
-    if (cheakConnections.length === 0) {
-        throw new ApiError(404, "No connections found")
-    }
+    .populate("sender", "name profilePic bio skills")
+    .populate("receiver", "name profilePic bio skills");
 
     return res.status(200).json(
         new ApiResponse(200, cheakConnections, "Connections fetched successfully")

@@ -6,16 +6,13 @@ import asyncHandler from "../../utils/asyncHandler.js";
 const searchUser = asyncHandler(async (req, res) => {
     const skill = req.query.skill
 
+    let searchskill;
     if (!skill) {
-        throw new ApiError(400, "Skill is required")
-    }
-
-    const searchskill = await User.find({
-        skills: { $regex: skill, $options: "i" }
-    }).select("-password")
-
-    if (searchskill.length === 0) {
-        throw new ApiError(404, "No users found with this skill")
+        searchskill = await User.find({}).limit(12).select("-password");
+    } else {
+        searchskill = await User.find({
+            skills: { $regex: skill, $options: "i" }
+        }).select("-password");
     }
 
     return res.status(200).json(

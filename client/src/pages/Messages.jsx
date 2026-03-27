@@ -22,9 +22,9 @@ const Messages = () => {
     const fetchConnections = async () => {
       try {
         const { data } = await api.get('/connection/all');
-        if (data.statusCode === 200) {
+        if (data.statusCode === 200 || data.statusCode === 201) {
           const accepted = data.data.filter(c => c.status === 'accepted');
-          const contacts = accepted.map(c => c.sender._id === user._id ? c.receiver : c.sender).filter(Boolean);
+          const contacts = accepted.map(c => c.sender?._id === user._id ? c.receiver : c.sender).filter(Boolean);
           setConnections(contacts);
 
           if (initialUserId) {
@@ -35,7 +35,9 @@ const Messages = () => {
           }
         }
       } catch (err) {
-        toast.error("Error loading chat contacts");
+        if(err.response?.status !== 404){
+            toast.error("Error loading chat contacts");
+        }
       }
     };
     fetchConnections();
@@ -58,7 +60,7 @@ const Messages = () => {
     if (!selectedUser) return;
     try {
       const { data } = await api.get(`/message/conversation/${selectedUser._id}`);
-      if (data.statusCode === 200) {
+      if (data.statusCode === 200 || data.statusCode === 201) {
         setMessages(data.data);
       }
     } catch (err) {
@@ -82,16 +84,16 @@ const Messages = () => {
   };
 
   return (
-    <div className="h-[80vh] flex flex-col md:flex-row bg-slate-800/80 border border-slate-700/50 rounded-2xl overflow-hidden shadow-xl animate-in fade-in duration-500">
+    <div className="glass-panel h-[calc(100vh-140px)] flex flex-col md:flex-row overflow-hidden shadow-sm">
       {/* Sidebar - Contacts */}
-      <div className="md:w-1/3 border-r border-slate-700/50 flex flex-col">
-        <div className="p-4 border-b border-slate-700/50 bg-slate-800">
-          <h2 className="font-bold text-slate-100 text-lg">Conversations</h2>
+      <div className="w-full md:w-1/3 xl:w-1/4 border-r border-slate-200 flex flex-col bg-white">
+        <div className="p-4 border-b border-slate-200">
+          <h2 className="font-semibold text-slate-800 text-lg">Messaging</h2>
         </div>
-        <div className="flex-1 overflow-y-auto w-full max-h-[25vh] md:max-h-full">
+        <div className="flex-1 overflow-y-auto w-full border-t border-transparent bg-white">
           {connections.length === 0 ? (
-            <div className="p-8 text-center text-slate-400">
-              <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+            <div className="p-8 text-center text-slate-500">
+              <MessageSquare className="w-8 h-8 mx-auto mb-2 text-slate-300" />
               <p className="text-sm">No connections yet</p>
             </div>
           ) : (
@@ -99,17 +101,20 @@ const Messages = () => {
               <button
                 key={contact._id}
                 onClick={() => setSelectedUser(contact)}
-                className={`w-full text-left p-4 flex items-center space-x-3 transition-colors ${
-                  selectedUser?._id === contact._id ? 'bg-blue-600/10 border-l-4 border-blue-500' : 'hover:bg-slate-700/30 border-l-4 border-transparent'
+                className={`w-full text-left p-4 flex items-center space-x-3 transition-colors border-b border-slate-100 ${
+                  selectedUser?._id === contact._id 
+                  ? 'bg-[#f3f2ef] border-l-4 border-l-[#0a66c2]' 
+                  : 'hover:bg-[#f3f2ef] border-l-4 border-l-transparent'
                 }`}
               >
                 <img 
-                  src={contact.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.name)}&background=1e293b&color=3b82f6`} 
+                  src={contact.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.name)}&background=ffffff&color=0a66c2`} 
                   alt={contact.name}
-                  className="w-10 h-10 rounded-full border border-slate-600"
+                  className="w-12 h-12 rounded-full border border-slate-200 object-cover"
                 />
                 <div className="overflow-hidden">
-                  <h3 className="font-medium text-slate-200 truncate">{contact.name}</h3>
+                  <h3 className="font-medium text-slate-900 truncate tracking-tight">{contact.name}</h3>
+                  <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{contact.bio || "Active on SkillHub"}</p>
                 </div>
               </button>
             ))
@@ -118,36 +123,41 @@ const Messages = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col bg-slate-900/50 relative">
+      <div className="flex-[2] flex flex-col bg-slate-50 relative h-full">
         {selectedUser ? (
           <>
             {/* Chat header */}
-            <div className="p-4 border-b border-slate-700/50 bg-slate-800/80 flex items-center space-x-3 backdrop-blur-sm shadow-sm z-10">
+            <div className="p-4 border-b border-slate-200 bg-white flex items-center space-x-3 z-10 shadow-sm">
               <img 
-                src={selectedUser.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedUser.name)}&background=1e293b&color=3b82f6`} 
+                src={selectedUser.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedUser.name)}&background=ffffff&color=0a66c2`} 
                 alt={selectedUser.name}
-                className="w-10 h-10 rounded-full"
+                className="w-10 h-10 rounded-full border border-slate-200"
               />
-              <h2 className="font-semibold text-slate-100">{selectedUser.name}</h2>
+              <div>
+                 <h2 className="font-semibold text-slate-900 leading-tight">{selectedUser.name}</h2>
+                 <p className="text-xs text-[#0a66c2] font-medium leading-tight mt-0.5">{selectedUser.skills?.[0]}</p>
+              </div>
             </div>
             
             {/* Messages body */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-4 pb-20 md:pb-4">
+            <div className="flex-1 p-4 overflow-y-auto space-y-4">
               {messages.length === 0 ? (
                 <div className="h-full flex items-center justify-center text-slate-500">
-                  <p>Start a conversation with {selectedUser.name}</p>
+                  <p className="bg-white px-6 py-3 rounded-full border border-slate-200 text-sm font-medium shadow-sm">
+                    Say hello to {selectedUser.name.split(' ')[0]}
+                  </p>
                 </div>
               ) : (
                 messages.map(msg => {
-                  const isMe = msg.sender === user._id || msg.sender?._id === user._id; // depending on backend population
+                  const isMe = msg.sender === user._id || msg.sender?._id === user._id;
                   return (
                     <div key={msg._id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[70%] rounded-2xl px-4 py-2 text-sm ${
+                      <div className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm ${
                         isMe 
-                          ? 'bg-blue-600 text-white rounded-br-none' 
-                          : 'bg-slate-700 text-slate-200 rounded-bl-none border border-slate-600'
+                          ? 'bg-[#0a66c2] text-white rounded-br-none' 
+                          : 'bg-white text-slate-800 rounded-bl-none border border-slate-200'
                       }`}>
-                        <p>{msg.content}</p>
+                        <p className="whitespace-pre-wrap">{msg.content}</p>
                       </div>
                     </div>
                   );
@@ -157,30 +167,31 @@ const Messages = () => {
             </div>
 
             {/* Input area */}
-            <div className="p-4 bg-slate-800 border-t border-slate-700/50">
+            <div className="p-4 bg-white border-t border-slate-200 shadow-sm z-10">
               <form onSubmit={handleSendMessage} className="flex space-x-2">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type your message..."
-                  className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-blue-500"
+                  placeholder="Write a message..."
+                  className="flex-1 bg-[#f3f2ef] border border-transparent hover:border-slate-300 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-slate-400 focus:bg-white transition-colors"
                 />
                 <button
                   type="submit"
                   disabled={loading || !newMessage.trim()}
-                  className="btn-primary flex items-center justify-center px-4"
+                  className="btn-primary flex items-center justify-center px-5 rounded-lg"
                 >
-                  <Send className="w-5 h-5" />
+                  <Send className="w-5 h-5 mr-1" />
+                  <span className="font-semibold">Send</span>
                 </button>
               </form>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-slate-500 p-8">
-            <MessageSquare className="w-16 h-16 mb-4 opacity-30" />
-            <h3 className="text-xl font-medium text-slate-400">Your Messages</h3>
-            <p className="mt-2 text-center max-w-sm">Select a connection from the sidebar to view your conversation.</p>
+          <div className="flex-1 flex flex-col items-center justify-center text-slate-500 p-8 h-full bg-white">
+            <MessageSquare className="w-16 h-16 mb-4 text-[#0a66c2]/20" />
+            <h3 className="text-xl font-medium text-slate-700">Your Messages</h3>
+            <p className="mt-2 text-center max-w-sm text-sm">Select a connection from the left panel to start chatting or view previous conversations.</p>
           </div>
         )}
       </div>
