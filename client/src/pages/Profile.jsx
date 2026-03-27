@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
-import { UserPlus, MessageSquare, Briefcase, Award, Check, UserCheck } from 'lucide-react';
+import { UserPlus, MessageSquare, Award, Check, UserCheck, Shield, Clock } from 'lucide-react';
 
 const Profile = () => {
   const { id } = useParams();
@@ -13,7 +13,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState(null); // 'none', 'pending', 'accepted'
   const [isFollowing, setIsFollowing] = useState(false);
-  const [metrics, setMetrics] = useState({ followers: 0, following: 0, connections: 0 });
   
   const isOwner = currentUser?._id === id;
 
@@ -56,7 +55,6 @@ const Profile = () => {
         }
       }
     } catch (error) {
-      // If no connections, it might throw 404 (though we patched backend, better safe)
       setConnectionStatus('none');
     }
 
@@ -85,7 +83,6 @@ const Profile = () => {
   };
 
   const endorseSkill = async (skillName) => {
-    // Requires backend setup for individual skills
     toast.success(`Endorsed ${skillName}`);
   };
   
@@ -108,7 +105,7 @@ const Profile = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[60vh]">
-        <div className="w-8 h-8 border-4 border-[#0a66c2] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -116,112 +113,111 @@ const Profile = () => {
   if (!profile) return null;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 tracking-wide pb-20">
+    <div className="max-w-6xl mx-auto space-y-8 tracking-wide pb-20">
       
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content Area */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-3 space-y-6">
+              
               {/* Profile Card */}
-              <div className="glass-panel overflow-hidden relative">
-                <div className="h-32 md:h-48 bg-[#a0b4b7] absolute top-0 w-full left-0 z-0"></div>
+              <div className="glass-panel overflow-hidden relative shadow-2xl border-[#1e293b]">
+                <div className="h-40 md:h-56 bg-gradient-to-tr from-blue-700 via-indigo-800 to-purple-900 absolute top-0 w-full left-0 z-0"></div>
                 
-                <div className="relative z-10 px-6 sm:px-8 pb-8 pt-16 md:pt-32">
-                  <div className="flex flex-col md:flex-row items-center md:items-end justify-between">
+                <div className="relative z-10 px-6 sm:px-10 pb-10 pt-20 md:pt-40 flex flex-col items-center md:items-start text-center md:text-left">
+                    <img 
+                      src={profile.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=1e293b&color=3b82f6&size=200`}
+                      alt={profile.name}
+                      className="w-36 h-36 md:w-44 md:h-44 rounded-2xl border-[6px] border-[#0b0f19] bg-[#1e293b] shadow-2xl object-cover relative z-20 -mt-10 md:mt-0"
+                    />
                     
-                    <div className="flex flex-col md:flex-row items-center md:items-end md:space-x-6 w-full">
-                        <img 
-                          src={profile.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=ffffff&color=0a66c2&size=150`}
-                          alt={profile.name}
-                          className="w-32 h-32 md:w-36 md:h-36 rounded-full border-4 border-white bg-white shadow-sm object-cover relative z-20"
-                        />
-                        
-                        <div className="mt-4 md:mt-2 text-center md:text-left flex-1 pb-2">
-                          <h1 className="text-2xl font-semibold text-slate-900 leading-tight">{profile.name}</h1>
-                          <p className="text-slate-700 text-[15px] mt-1 pr-4 whitespace-pre-wrap">
-                            {profile.bio || "Member at SkillHub"}
-                          </p>
-                          <div className="text-slate-500 text-sm mt-2 flex items-center justify-center md:justify-start">
-                             <span className="font-semibold text-[#0a66c2] hover:underline cursor-pointer">{profile.metrics?.connections || 0} connections</span>
-                             <span className="mx-2">•</span>
-                             <span className="text-slate-500">{profile.metrics?.followers || 0} followers</span>
-                          </div>
-                        </div>
+                    <div className="mt-5 w-full">
+                      <h1 className="text-3xl font-black text-white tracking-tight flex items-center justify-center md:justify-start">
+                         {profile.name} 
+                         {profile.isPrivate && <Shield className="w-5 h-5 ml-3 text-slate-500" title="Private Profile" />}
+                      </h1>
+                      <p className="text-slate-300 text-lg mt-2 max-w-2xl font-medium leading-relaxed">
+                        {profile.bio || "Building the future on SkillHub"}
+                      </p>
+                      
+                      <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-4 bg-[#1e293b]/50 w-fit md:pr-6 pr-4 pl-4 py-2 rounded-xl border border-[#334155]/50">
+                         <span className="font-bold text-blue-400 hover:text-blue-300 transition-colors cursor-pointer">{profile.metrics?.connections || 0} <span className="text-slate-400 font-medium">connections</span></span>
+                         <div className="w-1.5 h-1.5 rounded-full bg-slate-600"></div>
+                         <span className="font-bold text-slate-200">{profile.metrics?.followers || 0} <span className="text-slate-400 font-medium">followers</span></span>
+                      </div>
                     </div>
 
-                    <div className="mt-6 md:mt-0 md:pl-4 flex space-x-2 w-full md:w-auto">
+                    <div className="mt-8 flex flex-wrap gap-3 w-full justify-center md:justify-start">
                       {isOwner ? (
-                        <>
-                           <button onClick={() => navigate('/settings')} className="btn-primary w-full md:w-auto text-sm px-5 py-1.5 flex items-center justify-center h-9">
-                             Edit
-                           </button>
-                        </>
+                        <button onClick={() => navigate('/settings')} className="btn-primary w-full sm:w-auto h-12 px-8">
+                          Manage Profile
+                        </button>
                       ) : (
                         <>
                           {connectionStatus === 'none' && (
-                            <button onClick={handleConnect} className="btn-primary flex items-center justify-center flex-1 md:flex-none text-sm px-5 h-9">
-                              <UserPlus className="w-4 h-4 mr-1.5" /> Connect
+                            <button onClick={handleConnect} className="btn-primary h-12 px-8 flex-1 sm:flex-none">
+                              <UserPlus className="w-5 h-5 mr-2" /> Connect
                             </button>
                           )}
                           {connectionStatus === 'pending' && (
-                            <button disabled className="btn-secondary opacity-80 cursor-not-allowed flex items-center justify-center flex-1 md:flex-none text-sm px-5 h-9">
-                              Pending
+                            <button disabled className="btn-secondary h-12 px-8 flex-1 sm:flex-none opacity-100 bg-[#334155] border border-slate-600 text-slate-300">
+                              <Clock className="w-5 h-5 mr-2 text-slate-400" /> Pending...
                             </button>
                           )}
                           {connectionStatus === 'accepted' && (
-                            <button onClick={() => navigate(`/messages?userId=${id}`)} className="btn-primary flex items-center justify-center flex-1 md:flex-none text-sm px-5 h-9">
-                              <MessageSquare className="w-4 h-4 mr-1.5" /> Message
+                            <button onClick={() => navigate(`/messages?userId=${id}`)} className="btn-primary h-12 px-8 flex-1 sm:flex-none shadow-blue-500/20">
+                              <MessageSquare className="w-5 h-5 mr-2" /> Message
                             </button>
                           )}
-                          <button onClick={handleFollowToggle} className="btn-outline flex items-center justify-center flex-1 md:flex-none text-sm px-5 h-9">
-                             {isFollowing ? <><UserCheck className="w-4 h-4 mr-1.5" /> Following</> : '+ Follow'}
+                          <button onClick={handleFollowToggle} className="btn-outline h-12 px-8 flex-1 sm:flex-none border-[#334155] text-slate-300 hover:text-blue-400 hover:border-blue-500 focus:bg-blue-500/10">
+                             {isFollowing ? <><UserCheck className="w-5 h-5 mr-2 text-blue-400" /> Following</> : '+ Follow'}
                           </button>
                         </>
                       )}
                     </div>
-                  </div>
                 </div>
               </div>
 
               {/* Skills Section */}
-              <div className="glass-panel p-6 sm:p-8">
-                <h2 className="text-xl font-semibold text-slate-900 mb-6">Skills</h2>
+              <div className="glass-panel p-6 sm:p-10 border-[#1e293b]">
+                <h2 className="text-2xl font-bold text-white mb-6 border-b border-[#1e293b] pb-4">Verified Skills</h2>
                 {profile.skills?.length > 0 ? (
-                  <div className="flex flex-col space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {profile.skills.map((skill, index) => (
-                      <div key={index} className="flex flex-col border-b border-slate-200 pb-4 last:border-0 last:pb-0 group">
+                      <div key={index} className="bg-[#0b0f19] border border-[#1e293b] hover:border-[#334155] p-5 rounded-xl transition-colors group">
                         <div className="flex items-center justify-between">
-                            <span className="font-semibold text-slate-800 tracking-tight">{skill}</span>
+                            <span className="font-bold text-slate-200 text-lg">{skill}</span>
                             {!isOwner && connectionStatus === 'accepted' && (
                               <button 
                                 onClick={() => endorseSkill(skill)}
-                                className="px-3 py-1 text-xs font-semibold text-slate-600 border border-slate-500 hover:bg-slate-50 hover:border-slate-800 rounded-full transition-colors flex items-center"
+                                className="px-3 py-1.5 text-xs font-bold text-slate-400 border border-slate-600 hover:text-blue-400 hover:border-blue-400 rounded-lg transition-colors flex items-center bg-[#1e293b]/50 group-hover:bg-[#1e293b]"
                               >
-                                <Check className="w-3 h-3 mr-1"/> Endorse
+                                <Check className="w-3.5 h-3.5 mr-1"/> Endorse
                               </button>
                             )}
                         </div>
-                        <div className="flex items-center mt-2 text-sm text-slate-600">
-                          <Award className="w-4 h-4 mr-2" />
-                          <span>Endorsed by professionals on SkillHub</span>
+                        <div className="flex items-center mt-3 text-sm text-slate-500 font-medium">
+                          <Award className="w-4 h-4 mr-2 text-blue-500/70" />
+                          <span>Endorsed by peers</span>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-slate-500">No skills added yet.</p>
+                  <div className="text-center py-10 bg-[#0b0f19]/50 rounded-xl border border-dashed border-[#334155]">
+                    <p className="text-slate-500 font-medium">No professional skills listed.</p>
+                  </div>
                 )}
               </div>
           </div>
           
           {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-4">
-              <div className="glass-panel p-4">
-                  <h3 className="font-semibold text-slate-900 mb-2">People you may know</h3>
-                  {/* Simulate Network suggestions */}
-                  <div className="text-center py-6 border border-slate-200 rounded-xl bg-slate-50">
-                      <p className="text-sm text-slate-500 mb-2 px-2">Expand your network to unlock more opportunities.</p>
-                      <button onClick={() => navigate('/connections')} className="text-sm font-semibold text-[#0a66c2] hover:underline">
-                         View your network
+          <div className="lg:col-span-1 space-y-6 hidden lg:block">
+              <div className="glass-panel p-6 border-[#1e293b]">
+                  <h3 className="font-bold text-white mb-4 text-lg">Your Network</h3>
+                  <div className="text-center py-6 border border-[#334155]/50 rounded-xl bg-[#0b0f19]/50">
+                      <p className="text-sm text-slate-400 mb-4 px-4 font-medium leading-relaxed">Expand your network to unlock more career opportunities.</p>
+                      <button onClick={() => navigate('/connections')} className="text-sm font-bold text-blue-400 hover:text-blue-300 hover:underline">
+                         View connections
                       </button>
                   </div>
               </div>
