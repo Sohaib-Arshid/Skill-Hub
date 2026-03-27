@@ -1,8 +1,8 @@
-import axios from "axios";
+import axios from 'axios';
 
-const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, 
+const api = axios.create({
+  baseURL: '/api',
   withCredentials: true,
 });
 
-export default API;
+export default api;
