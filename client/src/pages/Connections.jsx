@@ -85,7 +85,9 @@ const Connections = () => {
     let list = [];
     if (activeTab === 'accepted' || activeTab === 'pending') {
        list = filteredConnections.map(conn => {
-         const isSender = conn.sender?._id === user?._id;
+         const currentId = user?._id?.toString();
+         const senderId = conn.sender?._id?.toString() || conn.sender?.toString();
+         const isSender = senderId === currentId;
          const otherUser = isSender ? conn.receiver : conn.sender;
          if (!otherUser) return null;
          return { ...otherUser, connId: conn._id, status: conn.status, role: isSender ? 'sent' : 'received' };

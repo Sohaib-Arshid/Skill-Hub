@@ -9,8 +9,8 @@ const searchUser = asyncHandler(async (req, res) => {
 
     try {
         let searchskill;
-        if (!skill) {
-            searchskill = await User.find({}).limit(12).select("-password");
+        if (!skill || skill === "undefined" || skill === "") {
+            searchskill = await User.find({}).limit(12).select("-password").lean();
         } else {
             searchskill = await User.find({
                 skills: { $regex: skill, $options: "i" }

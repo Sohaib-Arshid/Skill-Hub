@@ -66,12 +66,15 @@ const Messages = () => {
     } catch (err) { }
   };
 
+  const currentUserId = user?._id?.toString();
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedUser) return;
+    const receiverId = selectedUser?._id || selectedUser;
+    if (!newMessage.trim() || !receiverId || receiverId === "undefined") return;
     try {
       setLoading(true);
-      await api.post(`/message/send/${selectedUser._id}`, { content: newMessage.trim() });
+      await api.post(`/message/send/${receiverId}`, { content: newMessage.trim() });
       setNewMessage('');
       fetchMessages();
     } catch (err) {
@@ -100,7 +103,7 @@ const Messages = () => {
                 key={contact._id || index}
                 onClick={() => setSelectedUser(contact)}
                 className={`w-full text-left p-4 flex items-center space-x-4 transition-all border-b ${
-                  selectedUser?._id === contact._id 
+                  selectedUser?._id?.toString() === contact._id?.toString() 
                   ? 'border-l-4 border-l-red-500 bg-black/5 dark:bg-white/5' 
                   : 'hover:bg-black/5 dark:hover:bg-white/5 border-l-4 border-l-transparent'
                 }`}
@@ -150,7 +153,8 @@ const Messages = () => {
                 </div>
               ) : (
                 messages.map(msg => {
-                  const isMe = msg.sender === user?._id || msg.sender?._id === user?._id;
+                  const senderId = msg.sender?._id?.toString() || msg.sender?.toString();
+                  const isMe = senderId === currentUserId;
                   return (
                     <div key={msg._id} className={`flex relative z-10 ${isMe ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-[75%] rounded-2xl px-5 py-3.5 text-[15px] shadow-lg ${

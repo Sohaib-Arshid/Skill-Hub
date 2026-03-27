@@ -71,10 +71,12 @@ const Profile = () => {
       const { data } = await api.get('/connection/all');
       if (data.statusCode === 200 || data.statusCode === 201) {
         const list = data.data || [];
-        const conn = list.find(c => 
-          (c.sender?._id === currentUser?._id && c.receiver?._id === id) ||
-          (c.receiver?._id === currentUser?._id && c.sender?._id === id)
-        );
+        const currentId = currentUser?._id?.toString();
+        const conn = list.find(c => {
+          const sId = c.sender?._id?.toString() || c.sender?.toString();
+          const rId = c.receiver?._id?.toString() || c.receiver?.toString();
+          return (sId === currentId && rId === id) || (rId === currentId && sId === id);
+        });
         if (conn) setConnectionStatus(conn.status);
         else setConnectionStatus('none');
       }
@@ -84,7 +86,11 @@ const Profile = () => {
       const followRes = await api.get('/follow/following');
       if (followRes.data.statusCode === 200 || followRes.data.statusCode === 201) {
           const list = followRes.data.data || [];
-          const isFoll = list.find(f => f.following?._id === id);
+          const currentId = id?.toString();
+          const isFoll = list.find(f => {
+            const fId = f.following?._id?.toString() || f.following?.toString();
+            return fId === currentId;
+          });
           setIsFollowing(!!isFoll);
       }
     } catch (error) { setIsFollowing(false); }
