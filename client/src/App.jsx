@@ -1,20 +1,55 @@
-import { Routes, Route } from "react-router-dom"
-import Login from "./pages/Login"
-import Register from "./pages/User_Register"
-import Dashboard from "./pages/Dashboard"
-import Profile from "./pages/User_Profile"
-import Search from "./pages/Search"
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/Layout';
+import { Toaster } from 'react-hot-toast';
+
+// Pages
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Search from './pages/Search';
+import Connections from './pages/Connections';
+import Messages from './pages/Messages';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/profile/:id" element={<Profile />} />
-      <Route path="/Search" element={<Search />} />
-    </Routes>
-  )
+    <>
+      <Toaster 
+        position="bottom-right" 
+        toastOptions={{
+          style: {
+            background: '#1e293b',
+            color: '#fff',
+            border: '1px solid #334155',
+          },
+        }}
+      />
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        
+        {/* Protected Routes wrapped with Sidebar Layout */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/connections" element={<Connections />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+        </Route>
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </>
+  );
 }
 
-export default App
+export default App;
