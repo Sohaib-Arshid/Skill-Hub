@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import UserCard from '../components/UserCard';
 import { useAuth } from '../context/AuthContext';
-import { Search, ArrowRight } from 'lucide-react';
+import { Search, ArrowRight, Sun, Sunrise, Sunset, Moon, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Dashboard = () => {
@@ -11,7 +11,16 @@ const Dashboard = () => {
   const [recentUsers, setRecentUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [greeting, setGreeting] = useState({ text: 'Good Morning', icon: <Sunrise /> });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting({ text: 'Good Morning', icon: <Sunrise className="w-6 h-6 text-orange-400" /> });
+    else if (hour < 17) setGreeting({ text: 'Good Afternoon', icon: <Sun className="w-6 h-6 text-yellow-500" /> });
+    else if (hour < 21) setGreeting({ text: 'Good Evening', icon: <Sunset className="w-6 h-6 text-red-400" /> });
+    else setGreeting({ text: 'Good Night', icon: <Moon className="w-6 h-6 text-indigo-400" /> });
+  }, []);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -113,12 +122,19 @@ const Dashboard = () => {
            transition={{ delay: 0.1 }}
            className="glass-panel p-6 sm:p-8"
         >
-          <div className="flex items-center justify-between mb-8">
-            <div>
-               <h2 className="text-xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>Suggested Professionals</h2>
-               <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>Discover individuals mapped to your industry</p>
+           <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center">
+               <div className="p-3 bg-red-500/10 rounded-xl mr-5 hidden sm:block">
+                  {greeting.icon}
+               </div>
+               <div>
+                  <h2 className="text-xl font-black tracking-tight flex items-center" style={{ color: 'var(--text-primary)' }}>
+                    {greeting.text}, {user?.name?.split(' ')[0]} <Sparkles className="w-4 h-4 ml-2 text-red-500 opacity-50" />
+                  </h2>
+                  <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>Discover the best professionals for your next project</p>
+               </div>
             </div>
-            <button onClick={() => navigate('/search')} className="text-red-500 hover:text-red-400 hover:bg-red-500/10 px-4 py-2 rounded-lg font-bold text-sm transition-colors hidden sm:block">
+            <button onClick={() => navigate('/search')} className="text-red-500 hover:text-red-400 hover:bg-red-500/10 px-4 py-2 rounded-lg font-bold text-sm transition-colors hidden sm:block uppercase tracking-widest border border-red-500/20">
               Explore All
             </button>
           </div>
@@ -126,7 +142,18 @@ const Dashboard = () => {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse h-[300px] rounded-xl border" style={{ backgroundColor: 'var(--bg-main)', borderColor: 'var(--border-line)' }}></div>
+                <div key={i} className="animate-pulse h-[320px] rounded-2xl border relative overflow-hidden bg-gradient-to-b from-[var(--bg-panel)] to-[var(--bg-main)]" style={{ borderColor: 'var(--border-line)' }}>
+                   <div className="h-20 bg-red-900/10 mb-4"></div>
+                   <div className="px-5 space-y-4">
+                      <div className="w-16 h-16 rounded-xl bg-white/5 -mt-10 border border-white/5"></div>
+                      <div className="w-3/4 h-5 bg-white/5 rounded"></div>
+                      <div className="w-full h-10 bg-white/5 rounded"></div>
+                      <div className="flex space-x-2">
+                         <div className="w-12 h-6 bg-white/5 rounded"></div>
+                         <div className="w-12 h-6 bg-white/5 rounded"></div>
+                      </div>
+                   </div>
+                </div>
               ))}
             </div>
           ) : recentUsers.length > 0 ? (
