@@ -21,29 +21,36 @@ const Connections = () => {
   const fetchNetworkData = async () => {
     try {
       // 1. Fetch Connections
-      const connRes = await api.get('/connection/all');
-      if (connRes.data.statusCode === 200) {
-        setConnections(connRes.data.data);
+      try {
+          const connRes = await api.get('/connection/all');
+          if (connRes.data.statusCode === 200 || connRes.data.statusCode === 201) {
+            setConnections(connRes.data.data || []);
+          }
+      } catch(e) {
+          if (e.response?.status !== 404) console.error("Error fetching connections");
+          setConnections([]);
       }
 
       // 2. Fetch Followers
       try {
         const follRes = await api.get('/follow/followers');
         if (follRes.data.statusCode === 200 || follRes.data.statusCode === 201) {
-            setFollowers(follRes.data.data);
+            setFollowers(follRes.data.data || []);
         }
       } catch (e) {
-          console.error("No followers found or error");
+          if (e.response?.status !== 404) console.error("Error fetching followers");
+          setFollowers([]);
       }
       
       // 3. Fetch Following
       try {
         const followRes = await api.get('/follow/following');
         if (followRes.data.statusCode === 200 || followRes.data.statusCode === 201) {
-            setFollowing(followRes.data.data);
+            setFollowing(followRes.data.data || []);
         }
       } catch (e) {
-          console.error("No following found or error");
+          if (e.response?.status !== 404) console.error("Error fetching following");
+          setFollowing([]);
       }
 
     } catch (error) {

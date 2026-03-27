@@ -34,7 +34,7 @@ const Settings = () => {
         skills: formData.skills.split(',').map(s => s.trim()).filter(Boolean)
       };
       
-      const { data } = await api.patch('/user/update', payload);
+      const { data } = await api.patch('/user/updateProfile', payload);
       // Backend returns statusCode 201 for profile update 
       if (data.statusCode === 200 || data.statusCode === 201) {
         toast.success('Your profile has been saved');

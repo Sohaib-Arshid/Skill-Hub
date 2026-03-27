@@ -30,8 +30,6 @@ const Profile = () => {
       const { data } = await api.get(`/user/${id}`);
       if (data.statusCode === 200 || data.statusCode === 201) {
         setProfile(data.data);
-         // Simulate metrics count from backend usually
-        setMetrics({ followers: 15, following: 10, connections: 50 }); // Replace with actual backend data if available.
       }
     } catch (error) {
       toast.error('Failed to load profile');
@@ -44,8 +42,10 @@ const Profile = () => {
   const checkConnectionStatus = async () => {
     try {
       const { data } = await api.get('/connection/all');
-      if (data.statusCode === 200) {
-        const conn = data.data.find(c => 
+      if (data.statusCode === 200 || data.statusCode === 201) {
+        // backend might return empty array
+        const list = data.data || [];
+        const conn = list.find(c => 
           (c.sender?._id === currentUser._id && c.receiver?._id === id) ||
           (c.receiver?._id === currentUser._id && c.sender?._id === id)
         );
@@ -55,15 +55,20 @@ const Profile = () => {
           setConnectionStatus('none');
         }
       }
-      
+    } catch (error) {
+      // If no connections, it might throw 404 (though we patched backend, better safe)
+      setConnectionStatus('none');
+    }
+
+    try {
       const followRes = await api.get('/follow/following');
       if (followRes.data.statusCode === 200 || followRes.data.statusCode === 201) {
-          const isFoll = followRes.data.data.find(f => f.following?._id === id);
+          const list = followRes.data.data || [];
+          const isFoll = list.find(f => f.following?._id === id);
           setIsFollowing(!!isFoll);
       }
-      
     } catch (error) {
-      console.error('Error fetching connection status');
+      setIsFollowing(false);
     }
   };
 
@@ -136,9 +141,9 @@ const Profile = () => {
                             {profile.bio || "Member at SkillHub"}
                           </p>
                           <div className="text-slate-500 text-sm mt-2 flex items-center justify-center md:justify-start">
-                             <span className="font-semibold text-[#0a66c2] hover:underline cursor-pointer">{metrics.connections} connections</span>
+                             <span className="font-semibold text-[#0a66c2] hover:underline cursor-pointer">{profile.metrics?.connections || 0} connections</span>
                              <span className="mx-2">•</span>
-                             <span className="text-slate-500">{metrics.followers} followers</span>
+                             <span className="text-slate-500">{profile.metrics?.followers || 0} followers</span>
                           </div>
                         </div>
                     </div>
