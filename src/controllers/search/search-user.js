@@ -14,7 +14,7 @@ const searchUser = asyncHandler(async (req, res) => {
         skills: { $regex: skill, $options: "i" }
     }).select("-password")
 
-    if (searchedUsers.length === 0) {
+    if (searchskill.length === 0) {
         throw new ApiError(404, "No users found with this skill")
     }
 

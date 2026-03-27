@@ -2,9 +2,10 @@ import { useEffect, useState } from "react"
 import { useAuth } from "../context/AuthContext"
 import { useNavigate } from "react-router-dom"
 import API from "../services/api"
+import Search from "./Search" // <--- Import your old component here
 
 const Dashboard = () => {
-  const { user, logout } = useAuth()
+  const { logout } = useAuth()
   const navigate = useNavigate()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -13,7 +14,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await API.get("/auth/me")  // backend endpoint
+        const res = await API.get("/auth/me")
         setProfile(res.data.user)
       } catch (err) {
         setError(err.response?.data?.message || "Failed to fetch profile")
@@ -21,38 +22,37 @@ const Dashboard = () => {
         setLoading(false)
       }
     }
-
     fetchProfile()
   }, [])
 
   const handleLogout = async () => {
     try {
-      await API.post("/auth/logout")  // backend logout if needed
-      logout()                        // AuthContext update
-      navigate("/login")               // redirect
+      await API.post("/auth/logout") 
+      logout()
+      navigate("/login")               
     } catch (err) {
       console.error("Logout failed", err)
     }
   }
 
   if (loading) return <p className="text-center mt-20">Loading...</p>
-  if (error) return <p className="text-center mt-20 text-red-500">{error}</p>
 
   return (
-    <div className="max-w-xl mx-auto mt-20 p-6 bg-white shadow rounded">
-      <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
+    <div className="max-w-4xl mx-auto mt-10 p-6">
+      {/* Profile Info */}
+      <div className="bg-white shadow rounded p-6 flex justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="mt-2 text-gray-600"><strong>Name:</strong> {profile?.name}</p>
+          <p className="text-gray-600"><strong>Bio:</strong> {profile?.bio || "N/A"}</p>
+        </div>
+        <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded h-fit">
+          Logout
+        </button>
+      </div>
 
-      <p><strong>Name:</strong> {profile?.name}</p>
-      <p><strong>Email:</strong> {profile?.email}</p>
-      <p><strong>Bio:</strong> {profile?.bio || "No bio provided"}</p>
-      <p><strong>Skills:</strong> {profile?.skills?.length ? profile.skills.join(", ") : "No skills listed"}</p>
-
-      <button
-        onClick={handleLogout}
-        className="mt-6 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-      >
-        Logout
-      </button>
+      {/* Render the Search Component here */}
+      <Search /> 
     </div>
   )
 }
