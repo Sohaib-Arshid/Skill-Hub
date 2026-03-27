@@ -2,7 +2,7 @@ import { Router } from "express";
 import { sendMessage } from "../controllers/message/sendMessage.js";
 import { getMessages } from "../controllers/message/getMessages.js";
 import { deleteMessage } from "../controllers/message/deleteMessage.js";
-import authMiddleware from "../middlewares/auth.meddleware.js";
+import authMiddleware from "../middlewares/auth.middleware.js";
 
 
 const messagerouter = Router();

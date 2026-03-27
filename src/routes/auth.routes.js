@@ -3,7 +3,7 @@ import { login } from "../controllers/auth/login.js";
 import { logoutUser } from "../controllers/auth/logout.js";
 import { registerUser } from "../controllers/auth/register.js";
 import { getCurrentUser } from "../controllers/auth/getCurrentUser.js";
-import authMiddleware from "../middlewares/auth.meddleware.js";
+import authMiddleware from "../middlewares/auth.middleware.js";
 
 const router = Router()
 

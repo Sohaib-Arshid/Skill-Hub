@@ -1,5 +1,5 @@
 import { Router } from "express";
-import authMiddleware from "../middlewares/auth.meddleware.js";
+import authMiddleware from "../middlewares/auth.middleware.js";
 import { sendRequest } from "../controllers/connection/sendRequest.js";
 import { acceptRequest } from "../controllers/connection/acceptRequest.js";
 import { rejectRequest } from "../controllers/connection/rejectRequest.js";

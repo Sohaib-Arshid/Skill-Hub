@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { endorseSkill } from "../controllers/endorsment/endorseSkill.js";
-import { getEndors } from "../controllers/endorsment/getEndorsements.js";
-import { removeEndors } from "../controllers/endorsment/removeEndorsement.js";
-import authMiddleware from "../middlewares/auth.meddleware.js";
+import { endorseSkill } from "../controllers/endorsement/endorseSkill.js";
+import { getEndors } from "../controllers/endorsement/getEndorsements.js";
+import { removeEndors } from "../controllers/endorsement/removeEndorsement.js";
+import authMiddleware from "../middlewares/auth.middleware.js";
 
 const endorseRouter = Router()
 

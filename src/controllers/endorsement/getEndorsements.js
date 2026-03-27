@@ -12,8 +12,10 @@ const getEndors = asyncHandler(async (req, res) => {
         .populate("endorser", "name email")
         .populate("skill", "name category")
 
-    if (findEndors.length === 0) {
-        throw new ApiError(404, "No endorsements found");
+    if (!findEndors || findEndors.length === 0) {
+        return res.status(200).json(
+            new ApiResponse(200, [], "No endorsements found")
+        );
     }
 
     return res.status(200).json(

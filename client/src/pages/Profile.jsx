@@ -57,7 +57,7 @@ const Profile = () => {
 
   const fetchEndorsements = async () => {
     try {
-      const { data } = await api.get(`/endorsment/get/${id}`);
+      const { data } = await api.get(`/endorsement/get/${id}`);
       if (data.statusCode === 200 || data.statusCode === 201) {
         setEndorsements(data.data || []);
       }
@@ -120,7 +120,8 @@ const Profile = () => {
 
   // Helper to resolve skill name string to ObjectId from master list
   const getSkillId = (skillName) => {
-    const found = masterSkills.find(s => s.skill.toLowerCase() === skillName.toLowerCase());
+    if (!skillName || !masterSkills) return null;
+    const found = masterSkills.find(s => s?.skill && s.skill.toLowerCase() === skillName.toLowerCase());
     return found ? found._id : null;
   };
 
@@ -131,7 +132,7 @@ const Profile = () => {
        return;
     }
     try {
-       await api.post(`/endorsment/endorse/${id}/${skillId}`);
+       await api.post(`/endorsement/endorse/${id}/${skillId}`);
        toast.success(`Endorsed ${skillName}`);
        fetchEndorsements(); // Refetch instantly
     } catch (e) { 
@@ -143,7 +144,7 @@ const Profile = () => {
     const skillId = getSkillId(skillName);
     if (!skillId) return;
     try {
-       await api.delete(`/endorsment/delete/${id}/${skillId}`);
+       await api.delete(`/endorsement/delete/${id}/${skillId}`);
        toast.success(`Removed endorsement for ${skillName}`);
        fetchEndorsements(); // Refetch instantly
     } catch (e) { 

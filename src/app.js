@@ -27,7 +27,7 @@ app.use("/api/user", userrouter)
 app.use("/api/search", searchRouter)
 app.use("/api/connection", connectionrouter)
 app.use("/api/follow", followRouter)
-app.use("/api/endorsment", endorseRouter )
+app.use("/api/endorsement", endorseRouter )
 app.use("/api/skill" , skillRouter)
 app.use("/api/message" , messagerouter)
 

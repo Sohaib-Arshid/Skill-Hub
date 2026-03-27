@@ -3,7 +3,7 @@ import { allSkills } from "../controllers/skill/allSkill.js"
 import { createSkill } from "../controllers/skill/createSkill.js"
 import { getSkill } from "../controllers/skill/getSkills.js"
 import { deleteSkill } from "../controllers/skill/removeSkill.js"
-import authMiddleware from "../middlewares/auth.meddleware.js"
+import authMiddleware from "../middlewares/auth.middleware.js"
 
 const skillRouter = Router()
 

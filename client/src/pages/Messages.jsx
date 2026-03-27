@@ -57,7 +57,7 @@ const Messages = () => {
   }, [messages]);
 
   const fetchMessages = async () => {
-    if (!selectedUser) return;
+    if (!selectedUser?._id) return;
     try {
       const { data } = await api.get(`/message/conversation/${selectedUser._id}`);
       if (data.statusCode === 200 || data.statusCode === 201) {
@@ -95,9 +95,9 @@ const Messages = () => {
               <p className="text-sm font-bold" style={{ color: 'var(--text-secondary)' }}>No accepted connections to message.</p>
             </div>
           ) : (
-            connections.map(contact => (
+            connections.map((contact, index) => (
               <button
-                key={contact._id}
+                key={contact._id || index}
                 onClick={() => setSelectedUser(contact)}
                 className={`w-full text-left p-4 flex items-center space-x-4 transition-all border-b ${
                   selectedUser?._id === contact._id 
@@ -145,7 +145,7 @@ const Messages = () => {
               {messages.length === 0 ? (
                 <div className="h-full flex items-center justify-center relative z-10">
                   <p className="px-6 py-3 rounded-full border text-sm font-bold shadow-lg" style={{ backgroundColor: 'var(--bg-panel)', borderColor: 'var(--border-line)', color: 'var(--text-secondary)' }}>
-                    Say hello to {selectedUser.name.split(' ')[0]} 👋
+                    Say hello to {selectedUser?.name?.split(' ')[0] || 'there'} 👋
                   </p>
                 </div>
               ) : (
