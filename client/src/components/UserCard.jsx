@@ -1,49 +1,51 @@
 import { Link } from 'react-router-dom';
-import { UserPlus } from 'lucide-react';
+import { MapPin, Briefcase } from 'lucide-react';
 
 const UserCard = ({ user }) => {
   return (
-    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow duration-300 relative pb-14">
-      <div className="h-16 bg-gradient-to-r from-blue-100 to-[#dce6f1]"></div>
-      
-      <div className="px-4 -mt-10">
-        <img 
-          src={user.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=ffffff&color=0a66c2`} 
-          alt={user.name}
-          className="w-20 h-20 rounded-full object-cover border-4 border-white bg-white"
-        />
-        <div className="mt-2">
-          <Link to={`/profile/${user._id}`}>
-            <h3 className="text-lg font-semibold text-slate-900 hover:text-[#0a66c2] hover:underline transition-colors leading-tight">
-              {user.name}
-            </h3>
-          </Link>
-          <p className="text-sm text-slate-600 line-clamp-2 mt-1 min-h-[40px] leading-snug">
-            {user.bio || "Member at SkillHub"}
-          </p>
-        </div>
-      </div>
-      
-      <div className="px-4 mt-3 flex flex-wrap gap-1.5 pb-4">
-        {user.skills?.slice(0, 3).map((skill, index) => (
-          <span 
-            key={index} 
-            className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded-full"
-          >
-            {skill}
-          </span>
-        ))}
-        {user.skills?.length > 3 && (
-          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs font-medium rounded-full">
-            +{user.skills.length - 3}
-          </span>
-        )}
+    <div className="glass-panel hover:border-blue-500/50 hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between">
+      <div>
+         <div className="h-16 bg-gradient-to-r from-blue-600 to-indigo-600 relative opacity-80 group-hover:opacity-100 transition-opacity"></div>
+         
+         <div className="px-5 -mt-10 relative">
+           <img 
+             src={user.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1e293b&color=3b82f6`} 
+             alt={user.name}
+             className="w-20 h-20 rounded-xl object-cover border-4 border-[#151b2b] bg-[#1e293b] shadow-lg shadow-black/40 group-hover:scale-105 transition-transform"
+           />
+           <div className="mt-4">
+             <Link to={`/profile/${user._id}`}>
+               <h3 className="text-lg font-bold text-slate-100 hover:text-blue-400 transition-colors leading-tight tracking-wide">
+                 {user.name}
+               </h3>
+             </Link>
+             <p className="text-sm text-slate-400 line-clamp-2 mt-2 leading-relaxed h-[42px]">
+               {user.bio || "Active Professional on SkillHub"}
+             </p>
+           </div>
+         </div>
+         
+         <div className="px-5 mt-4 flex flex-wrap gap-2 pb-6">
+           {user.skills?.slice(0, 3).map((skill, index) => (
+             <span 
+               key={index} 
+               className="px-2.5 py-1 bg-[#1e293b] text-blue-300 border border-blue-500/20 text-[11px] font-semibold uppercase tracking-wider rounded-md shadow-sm"
+             >
+               {skill}
+             </span>
+           ))}
+           {user.skills?.length > 3 && (
+             <span className="px-2.5 py-1 bg-[#1e293b] text-slate-400 border border-slate-700 text-[11px] font-semibold uppercase tracking-wider rounded-md">
+               +{user.skills.length - 3}
+             </span>
+           )}
+         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-100 bg-slate-50">
+      <div className="p-4 border-t border-[#1e293b] bg-[#0b0f19]/30">
         <Link 
           to={`/profile/${user._id}`}
-          className="w-full flex justify-center items-center py-1.5 border border-[#0a66c2] text-[#0a66c2] hover:bg-[#0a66c2]/10 rounded-full text-sm font-semibold transition-colors"
+          className="w-full flex justify-center items-center py-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:text-blue-300 rounded-lg text-sm font-bold tracking-wide transition-colors"
         >
           View Profile
         </Link>

@@ -8,36 +8,36 @@ const Navbar = () => {
   
   const navItems = [
     { icon: Home, label: 'Home', path: '/dashboard' },
-    { icon: Users, label: 'My Network', path: '/connections' },
+    { icon: Users, label: 'Network', path: '/connections' },
     { icon: Search, label: 'Search', path: '/search' },
-    { icon: MessageSquare, label: 'Messaging', path: '/messages' },
+    { icon: MessageSquare, label: 'Messages', path: '/messages' },
     { icon: User, label: 'Profile', path: `/profile/${user?._id || ''}` },
     { icon: Settings, label: 'Settings', path: '/settings' },
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-50 px-4 md:px-8 flex items-center justify-between">
-      <div className="flex items-center space-x-6">
-        <h1 className="text-2xl font-bold text-[#0a66c2] mr-4 tracking-tight">
+    <nav className="fixed top-0 left-0 right-0 h-16 bg-[#151b2b] border-b border-[#1e293b] z-50 px-4 md:px-8 flex items-center justify-between shadow-sm">
+      <div className="flex items-center space-x-8">
+        <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 tracking-tight">
           SkillHub
         </h1>
         
-        <div className="hidden md:flex space-x-1">
+        <div className="hidden md:flex space-x-2">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
                 clsx(
-                  'flex flex-col items-center justify-center px-4 py-1 pb-0 h-16 transition-colors border-b-2',
+                  'flex items-center px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium',
                   isActive
-                    ? 'border-[#0a66c2] text-slate-900'
-                    : 'border-transparent text-slate-500 hover:text-slate-900'
+                    ? 'bg-blue-500/10 text-blue-400'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#1e293b]'
                 )
               }
             >
-              <item.icon className="w-6 h-6 mb-1" strokeWidth={1.5} />
-              <span className="text-[10px] hidden lg:block">{item.label}</span>
+              <item.icon className="w-4 h-4 mr-2" strokeWidth={2} />
+              {item.label}
             </NavLink>
           ))}
         </div>
@@ -45,16 +45,17 @@ const Navbar = () => {
 
       <div className="flex items-center space-x-4">
         {user && (
-          <div className="hidden md:flex items-center mr-4">
-            <span className="text-sm font-medium text-slate-600">Hi, {user.name}</span>
+          <div className="hidden lg:flex items-center mr-2">
+            <span className="text-sm font-medium text-slate-300 mr-3">{user.name}</span>
+            <img src={user.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1e293b&color=3b82f6`} alt="profile" className="w-8 h-8 rounded-full border border-[#1e293b]" />
           </div>
         )}
         <button
           onClick={logout}
-          className="flex items-center space-x-2 text-slate-500 hover:text-slate-900 transition-colors"
+          className="flex items-center justify-center p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+          title="Sign Out"
         >
           <LogOut className="w-5 h-5" />
-          <span className="text-sm hidden md:block">Sign out</span>
         </button>
       </div>
     </nav>

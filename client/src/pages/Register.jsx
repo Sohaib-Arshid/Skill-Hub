@@ -52,100 +52,97 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-[#f3f2ef] p-4 text-slate-800 py-10">
-      <div className="mb-8 w-full max-w-md flex justify-center mt-6">
-        <h1 className="text-4xl font-extrabold text-[#0a66c2] tracking-tighter">
-          SkillHub
-        </h1>
-      </div>
-
-      <div className="w-full max-w-[400px]">
-        <div className="text-center mb-6">
-          <h2 className="text-3xl text-slate-900 mb-1 tracking-tight pr-4">Make the most of your professional life</h2>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0b0f19] p-4 text-slate-200 py-10">
+      <div className="w-full max-w-[460px]">
+        <div className="mb-8 flex justify-center flex-col items-center">
+          <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 tracking-tight">
+            SkillHub
+          </h1>
+          <p className="text-slate-400 mt-2 font-medium">Build your professional future.</p>
         </div>
 
-        <div className="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200">
+        <div className="glass-panel p-6 sm:p-10 border-[#1e293b] shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Full Name *</label>
+              <label className="block text-sm font-semibold text-slate-400 mb-1.5 ml-1">Full Name *</label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full border border-slate-500 rounded px-3 py-2 bg-white focus:border-slate-800 focus:outline-none transition-colors"
+                className="input-field"
                 placeholder="John Doe"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Email *</label>
+              <label className="block text-sm font-semibold text-slate-400 mb-1.5 ml-1">Email <span className="text-red-500">*</span></label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full border border-slate-500 rounded px-3 py-2 bg-white focus:border-slate-800 focus:outline-none transition-colors"
-                placeholder="you@example.com"
+                className="input-field"
+                placeholder="you@email.com"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Password (6+ characters) *</label>
+              <label className="block text-sm font-semibold text-slate-400 mb-1.5 ml-1">Password <span className="text-red-500">*</span></label>
               <input
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full border border-slate-500 rounded px-3 py-2 bg-white focus:border-slate-800 focus:outline-none transition-colors"
-                placeholder="••••••••"
+                className="input-field"
+                placeholder="Minimum 6 characters"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Skills (comma separated) *</label>
+               <label className="block text-sm font-semibold text-slate-400 mb-1.5 ml-1">Core Skills <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 name="skills"
                 value={formData.skills}
                 onChange={handleChange}
-                className="w-full border border-slate-500 rounded px-3 py-2 bg-white focus:border-slate-800 focus:outline-none transition-colors"
-                placeholder="React, Node.js"
+                className="input-field"
+                placeholder="React, CSS, Node.js (comma separated)"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Bio</label>
+              <label className="block text-sm font-semibold text-slate-400 mb-1.5 ml-1">Bio</label>
               <textarea
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
                 rows={2}
-                className="w-full border border-slate-500 rounded px-3 py-2 bg-white focus:border-slate-800 focus:outline-none transition-colors resize-none"
-                placeholder="Tell us about yourself..."
+                className="input-field resize-none block"
+                placeholder="Tell us about your work..."
               />
             </div>
 
-            <p className="text-xs text-slate-500 text-center px-4 mt-6">
-              By clicking Agree & Join, you agree to the SkillHub User Agreement, Privacy Policy, and Cookie Policy.
+            <p className="text-xs text-slate-500 text-center mt-6 font-medium px-4">
+              By submitting this form, you agree to our Terms of Service and Privacy Policy.
             </p>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center items-center py-3.5 mt-2 bg-[#0a66c2] hover:bg-[#004182] text-white font-semibold rounded-full transition-colors"
+              className="w-full btn-primary h-[48px] mt-4"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/60 border-t-white rounded-full animate-spin" />
               ) : (
-                'Agree & Join'
+                'Create Account'
               )}
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm font-medium text-slate-600">
-             Already on SkillHub?{' '}
-             <Link to="/login" className="text-[#0a66c2] hover:text-[#004182] font-semibold underline">
+          <div className="mt-8 pt-6 border-t border-[#1e293b] text-center text-sm">
+             <span className="text-slate-400 font-medium">Already have an account? </span>
+             <Link to="/login" className="text-blue-400 font-bold hover:text-blue-300 hover:underline">
                Sign in
              </Link>
           </div>

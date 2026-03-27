@@ -1,22 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-500: #0a66c2;
-  --color-primary-600: #004182;
-  --color-primary-700: #00366b;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
   
-  --color-dark-900: #f3f2ef;
-  --color-dark-800: #ffffff;
-  --color-dark-700: #e8e8e8;
-  --color-dark-600: #dce6f1;
+  --color-bg-base: #0b0f19;
+  --color-bg-card: #151b2b;
+  --color-border-subtle: #1e293b;
+  --color-border-hover: #334155;
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 body {
-  @apply bg-[#f3f2ef] text-slate-900 antialiased;
+  @apply bg-[#0b0f19] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200;
 }
 
 /* Custom Scrollbar */
@@ -24,33 +23,33 @@ body {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f3f2ef; 
+  background: #0b0f19; 
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1; 
+  background: #1e293b; 
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8; 
+  background: #334155; 
 }
 
 /* Animations and Utilities */
 .glass-panel {
-  @apply bg-white border border-slate-200 shadow-sm rounded-lg;
+  @apply bg-[#151b2b] border border-[#1e293b] shadow-xl shadow-black/20 rounded-xl overflow-hidden;
 }
 
 .input-field {
-  @apply w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900 bg-white focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 transition-colors placeholder-slate-400;
+  @apply w-full border border-[#1e293b] rounded-lg px-4 py-3 text-slate-200 bg-[#0b0f19]/50 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-slate-500;
 }
 
 .btn-primary {
-  @apply bg-[#0a66c2] hover:bg-[#004182] text-white font-semibold py-2 px-4 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-500/20 text-white font-semibold py-2.5 px-6 rounded-lg transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center;
 }
 
 .btn-secondary {
-  @apply bg-white text-slate-600 hover:bg-slate-50 border border-slate-300 font-semibold py-2 px-4 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply bg-[#1e293b] hover:bg-[#334155] text-slate-300 font-semibold py-2.5 px-6 rounded-lg transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center;
 }
 
 .btn-outline {
-  @apply bg-transparent text-[#0a66c2] hover:bg-[#0a66c2]/10 border border-[#0a66c2] font-semibold py-2 px-4 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply bg-transparent hover:bg-blue-500/10 border border-blue-500 text-blue-400 font-semibold py-2 px-6 rounded-lg transition-colors active:scale-95 flex items-center justify-center;
 }
