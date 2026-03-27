@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -41,7 +42,7 @@ const Register = () => {
     try {
       const success = await register(payload);
       if (success) {
-        toast.success('Account created successfully');
+        toast.success('Identity created successfully');
         navigate('/dashboard');
       }
     } catch (error) {
@@ -52,19 +53,21 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0b0f19] p-4 text-slate-200 py-10">
-      <div className="w-full max-w-[460px]">
+    <div className="min-h-screen flex flex-col items-center justify-center py-10 px-4 relative z-10 transition-colors duration-300 bg-[var(--bg-main)]">
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="w-full max-w-[480px] relative z-10">
         <div className="mb-8 flex justify-center flex-col items-center">
-          <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500 tracking-tight">
-            SkillHub
+          <h1 className="text-4xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>
+            Join Skill<span className="text-red-500">Hub</span>
           </h1>
-          <p className="text-slate-400 mt-2 font-medium">Build your professional future.</p>
+          <p className="text-[14px] mt-2 font-bold uppercase tracking-widest text-red-500/80">Build Your Network</p>
         </div>
 
-        <div className="glass-panel p-6 sm:p-10 border-[#1e293b] shadow-2xl">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="glass-panel p-8 sm:p-10 shadow-[0_15px_50px_rgba(0,0,0,0.5)] border-[var(--border-line)]">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-slate-400 mb-1.5 ml-1">Full Name *</label>
+              <label className="block text-[13px] font-bold mb-2 uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>Full Name <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 name="name"
@@ -76,7 +79,7 @@ const Register = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-semibold text-slate-400 mb-1.5 ml-1">Email <span className="text-red-500">*</span></label>
+              <label className="block text-[13px] font-bold mb-2 uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>Email <span className="text-red-500">*</span></label>
               <input
                 type="email"
                 name="email"
@@ -88,7 +91,7 @@ const Register = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-400 mb-1.5 ml-1">Password <span className="text-red-500">*</span></label>
+              <label className="block text-[13px] font-bold mb-2 uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>Password <span className="text-red-500">*</span></label>
               <input
                 type="password"
                 name="password"
@@ -100,7 +103,7 @@ const Register = () => {
             </div>
 
             <div>
-               <label className="block text-sm font-semibold text-slate-400 mb-1.5 ml-1">Core Skills <span className="text-red-500">*</span></label>
+               <label className="block text-[13px] font-bold mb-2 uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>Core Skills <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 name="skills"
@@ -112,7 +115,7 @@ const Register = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-400 mb-1.5 ml-1">Bio</label>
+              <label className="block text-[13px] font-bold mb-2 drop-shadow-sm uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>Professional Summary</label>
               <textarea
                 name="bio"
                 value={formData.bio}
@@ -123,31 +126,31 @@ const Register = () => {
               />
             </div>
 
-            <p className="text-xs text-slate-500 text-center mt-6 font-medium px-4">
-              By submitting this form, you agree to our Terms of Service and Privacy Policy.
+            <p className="text-xs text-center mt-6 font-bold leading-relaxed px-2 opacity-60" style={{ color: 'var(--text-secondary)' }}>
+              By submitting this system initialization, you accept all transmission protocols and privacy rules.
             </p>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary h-[48px] mt-4"
+              className="w-full btn-primary h-[56px] mt-6 text-[15px] tracking-widest uppercase shadow-red-500/30"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white/60 border-t-white rounded-full animate-spin" />
+                <div className="w-6 h-6 border-[3px] border-white/60 border-t-white rounded-full animate-spin" />
               ) : (
-                'Create Account'
+                'Initialize Identity'
               )}
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-[#1e293b] text-center text-sm">
-             <span className="text-slate-400 font-medium">Already have an account? </span>
-             <Link to="/login" className="text-blue-400 font-bold hover:text-blue-300 hover:underline">
-               Sign in
+          <div className="mt-8 pt-6 border-t text-center text-sm font-medium" style={{ borderColor: 'var(--border-line)' }}>
+             <span style={{ color: 'var(--text-secondary)' }}>Already synchronized? </span>
+             <Link to="/login" className="text-red-500 font-bold hover:text-red-400 uppercase tracking-widest ml-1 transition-colors">
+               Sign In
              </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

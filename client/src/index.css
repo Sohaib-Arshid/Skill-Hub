@@ -1,55 +1,106 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
+  --color-primary-500: #ef4444; /* Neon Crimson */
+  --color-primary-600: #dc2626;
   
-  --color-bg-base: #0b0f19;
-  --color-bg-card: #151b2b;
-  --color-border-subtle: #1e293b;
-  --color-border-hover: #334155;
+  --color-bg-base: #fafafa;
+  --color-bg-card: #ffffff;
+  --color-border-subtle: #e5e7eb;
+  
+  --color-bg-base-dark: #050505;
+  --color-bg-card-dark: #111111;
+  --color-border-subtle-dark: #262626;
+  --color-border-hover-dark: #404040;
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light dark;
+}
+
+/* Light Mode Variables */
+html.light {
+  --bg-main: var(--color-bg-base);
+  --bg-panel: var(--color-bg-card);
+  --border-line: var(--color-border-subtle);
+  --text-primary: #171717;
+  --text-secondary: #525252;
+}
+
+/* Dark Mode Variables */
+html.dark {
+  --bg-main: var(--color-bg-base-dark);
+  --bg-panel: var(--color-bg-card-dark);
+  --border-line: var(--color-border-subtle-dark);
+  --text-primary: #f5f5f5;
+  --text-secondary: #a3a3a3;
 }
 
 body {
-  @apply bg-[#0b0f19] text-slate-200 antialiased selection:bg-blue-500/30 selection:text-blue-200;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  @apply antialiased transition-colors duration-300 selection:bg-red-500/30 selection:text-red-200;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0b0f19; 
+  background: var(--bg-main);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b; 
-  border-radius: 4px;
+  background: var(--border-line);
+  border-radius: 10px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #334155; 
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-hover-dark);
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #a3a3a3;
 }
 
-/* Animations and Utilities */
+
+/* Core UI Utilities */
 .glass-panel {
-  @apply bg-[#151b2b] border border-[#1e293b] shadow-xl shadow-black/20 rounded-xl overflow-hidden;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-line);
+  @apply shadow-xl rounded-2xl overflow-hidden transition-all duration-300;
+}
+html.dark .glass-panel {
+  @apply shadow-black/40;
+}
+html.light .glass-panel {
+  @apply shadow-slate-200/50;
 }
 
 .input-field {
-  @apply w-full border border-[#1e293b] rounded-lg px-4 py-3 text-slate-200 bg-[#0b0f19]/50 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-slate-500;
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-line);
+  color: var(--text-primary);
+  @apply w-full rounded-xl px-5 py-3.5 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 transition-all font-medium shadow-inner;
 }
 
 .btn-primary {
-  @apply bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-500/20 text-white font-semibold py-2.5 px-6 rounded-lg transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center;
+  @apply bg-red-600 hover:bg-red-500 shadow-lg shadow-red-600/20 text-white font-bold py-2.5 px-6 rounded-xl transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center border border-red-500;
 }
 
 .btn-secondary {
-  @apply bg-[#1e293b] hover:bg-[#334155] text-slate-300 font-semibold py-2.5 px-6 rounded-lg transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-line);
+  color: var(--text-primary);
+  @apply hover:bg-red-500/10 hover:border-red-500/50 font-bold py-2.5 px-6 rounded-xl transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center;
 }
 
 .btn-outline {
-  @apply bg-transparent hover:bg-blue-500/10 border border-blue-500 text-blue-400 font-semibold py-2 px-6 rounded-lg transition-colors active:scale-95 flex items-center justify-center;
+  border: 1px solid var(--border-line);
+  color: var(--text-secondary);
+  @apply bg-transparent hover:border-red-500 hover:text-red-500 font-bold py-2 px-6 rounded-xl transition-colors active:scale-95 flex items-center justify-center;
+}
+
+.frosted-glass {
+  background-color: var(--bg-panel);
+  border-color: var(--border-line);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }

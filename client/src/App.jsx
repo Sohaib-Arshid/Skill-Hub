@@ -21,9 +21,18 @@ function App() {
         position="bottom-right" 
         toastOptions={{
           style: {
-            background: '#1e293b',
-            color: '#fff',
-            border: '1px solid #334155',
+            background: '#111111',
+            color: '#f5f5f5',
+            border: '1px solid #262626',
+            fontWeight: '600',
+            fontSize: '14px',
+            borderRadius: '12px'
+          },
+          success: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
           },
         }}
       />

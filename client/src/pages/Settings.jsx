@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
-import { Camera, Save } from 'lucide-react';
+import { Camera, Save, Settings as SettingsIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Settings = () => {
   const { user, setUser } = useAuth();
@@ -25,7 +26,7 @@ const Settings = () => {
         profilePic: user.profilePic || ''
       });
       setIsPrivate(user.isPrivate || false);
-      setPreviewImage(user.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || '')}&background=1e293b&color=3b82f6`);
+      setPreviewImage(user.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || '')}&background=0a0a0a&color=ef4444`);
     }
   }, [user]);
 
@@ -60,7 +61,7 @@ const Settings = () => {
       // Backend returns statusCode 201 for profile update 
       if (data.statusCode === 200 || data.statusCode === 201) {
         toast.success('Your profile has been saved');
-        setUser({ ...user, ...payload }); // update context gracefully
+        setUser({ ...user, ...payload });
       } else {
         toast.error('Could not save profile');
       }
@@ -84,109 +85,112 @@ const Settings = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto tracking-wide space-y-8 pb-10">
-      <div className="mb-6">
-        <h1 className="text-3xl font-black text-white tracking-tight">Settings & Privacy</h1>
-        <p className="text-slate-400 text-[15px] mt-1">Manage your professional identity and account preferences</p>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-3xl mx-auto tracking-wide space-y-8 pb-10 relative z-10 transition-colors duration-300">
+      <div className="mb-8 flex items-center">
+        <SettingsIcon className="w-10 h-10 text-red-500 mr-4" />
+        <div>
+           <h1 className="text-3xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>Settings & Privacy</h1>
+           <p className="text-[15px] mt-1 font-medium" style={{ color: 'var(--text-secondary)' }}>Manage your professional identity and account preferences</p>
+        </div>
       </div>
 
-      <div className="glass-panel p-6 sm:p-10 border-[#1e293b] shadow-2xl relative overflow-hidden">
+      <div className="glass-panel p-6 sm:p-10 shadow-2xl relative overflow-hidden">
         {/* Subtle decorative glow */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -mt-32 -mr-32"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-red-600/10 rounded-full blur-[100px] pointer-events-none -mt-32 -mr-32"></div>
 
-        <h2 className="text-xl text-white font-bold mb-8 flex items-center border-b border-[#1e293b] pb-4">
+        <h2 className="text-xl font-black mb-8 flex items-center border-b pb-4 tracking-wide" style={{ color: 'var(--text-primary)', borderColor: 'var(--border-line)' }}>
           Profile Details
         </h2>
         
-        <form onSubmit={handleUpdateProfile} className="space-y-6">
+        <form onSubmit={handleUpdateProfile} className="space-y-6 relative z-10">
           
-          {/* Profile Picture Upload Area */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-8 mb-8">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-8 mb-10">
              <div className="relative group">
                 <img 
                   src={previewImage} 
                   alt="Profile Preview" 
-                  className="w-32 h-32 rounded-2xl object-cover border-4 border-[#151b2b] bg-[#1e293b] shadow-xl group-hover:opacity-80 transition-opacity"
+                  className="w-32 h-32 rounded-2xl object-cover border-4 bg-[var(--bg-main)] shadow-xl group-hover:opacity-60 transition-opacity"
+                  style={{ borderColor: 'var(--bg-panel)' }}
                 />
                 <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 cursor-pointer rounded-2xl transition-opacity">
-                   <div className="bg-blue-500 p-2 rounded-full text-white">
-                      <Camera className="w-5 h-5" />
+                   <div className="bg-red-600 p-2.5 rounded-full text-white shadow-[0_0_15px_rgba(239,68,68,0.8)]">
+                      <Camera className="w-6 h-6" />
                    </div>
                    <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                 </label>
              </div>
              <div className="text-center sm:text-left pt-2">
-                <h3 className="text-white font-bold text-lg">Profile Picture</h3>
-                <p className="text-slate-400 text-sm mt-1 max-w-sm">
+                <h3 className="font-bold text-lg tracking-tight" style={{ color: 'var(--text-primary)' }}>Profile Picture</h3>
+                <p className="text-sm mt-1.5 max-w-sm font-medium leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                   Upload a professional headshot. JPEG or PNG under 2MB. Click the image to change.
                 </p>
              </div>
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-slate-300 mb-2">Display Name</label>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-wide" style={{ color: 'var(--text-primary)' }}>Display Name</label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="input-field max-w-2xl bg-[#0b0f19] border-[#1e293b] focus:border-blue-500 shadow-inner"
+              className="input-field max-w-2xl px-5 py-4"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-slate-300 mb-2">Professional Summary</label>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-wide" style={{ color: 'var(--text-primary)' }}>Professional Summary</label>
             <textarea
               value={formData.bio}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
               rows={3}
-              className="input-field resize-none max-w-2xl bg-[#0b0f19] border-[#1e293b] focus:border-blue-500 shadow-inner"
+              className="input-field resize-none max-w-2xl px-5 py-4"
               placeholder="Tell others about your experience..."
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-slate-300 mb-2">Core Skills</label>
+            <label className="block text-sm font-bold mb-2 uppercase tracking-wide" style={{ color: 'var(--text-primary)' }}>Core Skills</label>
             <input
               type="text"
               value={formData.skills}
               onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-              className="input-field max-w-2xl bg-[#0b0f19] border-[#1e293b] focus:border-blue-500 shadow-inner"
+              className="input-field max-w-2xl px-5 py-4"
               placeholder="e.g. React, Node.js"
             />
           </div>
 
-          <div className="pt-6 mt-4 border-t border-[#1e293b] flex justify-end">
+          <div className="pt-8 mt-6 border-t flex justify-end" style={{ borderColor: 'var(--border-line)' }}>
              <button
                type="submit"
                disabled={loading}
-               className="btn-primary min-w-[160px]"
+               className="btn-primary min-w-[180px] h-[52px]"
              >
-               {loading ? 'Saving...' : <><Save className="w-4 h-4 mr-2"/> Save Profile</>}
+               {loading ? 'Saving Identity...' : <><Save className="w-5 h-5 mr-2"/> Save Profile</>}
              </button>
           </div>
         </form>
       </div>
 
-      <div className="glass-panel p-6 sm:p-10 border-[#1e293b] shadow-2xl">
-        <h2 className="text-xl text-white font-bold mb-8 flex items-center border-b border-[#1e293b] pb-4">
+      <div className="glass-panel p-6 sm:p-10 shadow-2xl">
+        <h2 className="text-xl font-black mb-8 flex items-center border-b pb-4 tracking-wide" style={{ color: 'var(--text-primary)', borderColor: 'var(--border-line)' }}>
           Visibility & Privacy
         </h2>
-        <div className="flex flex-col sm:flex-row items-center sm:justify-between space-y-4 sm:space-y-0 p-4 bg-[#0b0f19] border border-[#1e293b] rounded-xl shadow-inner">
+        <div className="flex flex-col sm:flex-row items-center sm:justify-between space-y-5 sm:space-y-0 p-6 rounded-2xl shadow-inner border bg-[var(--bg-main)]" style={{ borderColor: 'var(--border-line)' }}>
           <div className="max-w-md text-center sm:text-left">
-            <h3 className="font-bold text-slate-200">Private Mode</h3>
-            <p className="text-sm text-slate-400 mt-1">
-              When enabled, your profile details and full network remain hidden until you approve incoming connection requests.
+            <h3 className="font-bold text-lg" style={{ color: 'var(--text-primary)' }}>Private Mode</h3>
+            <p className="text-[14px] mt-2 font-medium leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              When enabled, your profile details and full network remain hidden until you explicitly approve incoming connection requests.
             </p>
           </div>
           <button 
             onClick={handleTogglePrivacy}
-            className={`relative inline-flex h-8 w-14 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none ${isPrivate ? 'bg-blue-500' : 'bg-[#1e293b]'}`}
+            className={`relative inline-flex h-9 w-16 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none shadow-inner ${isPrivate ? 'bg-red-500 shadow-red-500/30' : 'bg-slate-400 dark:bg-slate-700'}`}
           >
-            <span className={`pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-lg ring-0 transition duration-300 ease-in-out ${isPrivate ? 'translate-x-6' : 'translate-x-0'}`} />
+            <span className={`pointer-events-none inline-block h-8 w-8 transform rounded-full bg-white shadow-lg ring-0 transition duration-300 ease-in-out ${isPrivate ? 'translate-x-[28px]' : 'translate-x-0'}`} />
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom';
 import { Home, User, Search, MessageSquare, Users, Settings } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import clsx from 'clsx';
+import CursorBackground from './CursorBackground';
 
 const Layout = () => {
   const { user } = useAuth();
@@ -19,17 +20,18 @@ const Layout = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-slate-200 font-sans flex flex-col pt-16">
+    <div className="min-h-screen flex flex-col pt-20 relative font-sans transition-colors duration-300">
+      <CursorBackground />
       <Navbar />
       
-      <main className="flex-1 w-full max-w-[1128px] mx-auto p-4 md:py-8 min-h-screen">
+      <main className="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-6 min-h-screen relative z-40">
         <Outlet />
       </main>
 
       <Footer />
 
       {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#151b2b] border-t border-[#1e293b] flex items-center justify-around px-2 z-50 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 h-[68px] border-t frosted-glass flex items-center justify-around px-2 z-50 pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
@@ -37,14 +39,14 @@ const Layout = () => {
             className={({ isActive }) =>
               clsx(
                 'flex flex-col items-center justify-center p-2 transition-all flex-1 h-full relative',
-                isActive ? 'text-blue-400' : 'text-slate-500 hover:text-slate-300'
+                isActive ? 'text-red-500' : 'var(--text-secondary) hover:text-red-400'
               )
             }
           >
             {({ isActive }) => (
                <>
-                 <item.icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} />
-                 {isActive && <div className="absolute top-0 w-8 h-1 bg-blue-500 rounded-b-full shadow-[0_0_10px_rgba(59,130,246,0.8)]"></div>}
+                 <item.icon className={`w-6 h-6 transition-transform ${isActive ? 'scale-110 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]' : ''}`} strokeWidth={isActive ? 2.5 : 2} />
+                 {isActive && <div className="absolute top-0 w-10 h-1 bg-red-500 rounded-b-full shadow-[0_0_12px_rgba(239,68,68,1)]"></div>}
                </>
             )}
           </NavLink>

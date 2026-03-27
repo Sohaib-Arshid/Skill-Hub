@@ -3,21 +3,27 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
-import { UserPlus, MessageSquare, Award, Check, UserCheck, Shield, Clock } from 'lucide-react';
+import { UserPlus, MessageSquare, Award, Check, UserCheck, Shield, Clock, X } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Profile = () => {
   const { id } = useParams();
   const { user: currentUser } = useAuth();
   const navigate = useNavigate();
+  
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState(null); // 'none', 'pending', 'accepted'
   const [isFollowing, setIsFollowing] = useState(false);
+  const [endorsements, setEndorsements] = useState([]);
+  const [masterSkills, setMasterSkills] = useState([]); // Database mapping
   
   const isOwner = currentUser?._id === id;
 
   useEffect(() => {
     fetchProfile();
+    fetchEndorsements();
+    fetchMasterSkills(); // Load skills database for mapping names to ObjectIds
     if (!isOwner) {
       checkConnectionStatus();
     }
@@ -38,25 +44,41 @@ const Profile = () => {
     }
   };
 
+  const fetchMasterSkills = async () => {
+    try {
+      const { data } = await api.get('/skill/all');
+      if (data.statusCode === 200 || data.statusCode === 201) {
+        setMasterSkills(data.data || []);
+      }
+    } catch (error) {
+      console.error("Master skills fetch error:", error);
+    }
+  };
+
+  const fetchEndorsements = async () => {
+    try {
+      const { data } = await api.get(`/endorsment/get/${id}`);
+      if (data.statusCode === 200 || data.statusCode === 201) {
+        setEndorsements(data.data || []);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const checkConnectionStatus = async () => {
     try {
       const { data } = await api.get('/connection/all');
       if (data.statusCode === 200 || data.statusCode === 201) {
-        // backend might return empty array
         const list = data.data || [];
         const conn = list.find(c => 
           (c.sender?._id === currentUser?._id && c.receiver?._id === id) ||
           (c.receiver?._id === currentUser?._id && c.sender?._id === id)
         );
-        if (conn) {
-          setConnectionStatus(conn.status);
-        } else {
-          setConnectionStatus('none');
-        }
+        if (conn) setConnectionStatus(conn.status);
+        else setConnectionStatus('none');
       }
-    } catch (error) {
-      setConnectionStatus('none');
-    }
+    } catch (error) { setConnectionStatus('none'); }
 
     try {
       const followRes = await api.get('/follow/following');
@@ -65,9 +87,7 @@ const Profile = () => {
           const isFoll = list.find(f => f.following?._id === id);
           setIsFollowing(!!isFoll);
       }
-    } catch (error) {
-      setIsFollowing(false);
-    }
+    } catch (error) { setIsFollowing(false); }
   };
 
   const handleConnect = async () => {
@@ -76,17 +96,13 @@ const Profile = () => {
       if (data.statusCode === 201 || data.statusCode === 200) {
         toast.success('Connection request sent');
         setConnectionStatus('pending');
-        fetchProfile(); // Refresh metrics instantly
+        fetchProfile(); 
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to send request');
     }
   };
 
-  const endorseSkill = async (skillName) => {
-    toast.success(`Endorsed ${skillName}`);
-  };
-  
   const handleFollowToggle = async () => {
       try {
           if (isFollowing) {
@@ -98,16 +114,64 @@ const Profile = () => {
               setIsFollowing(true);
               toast.success('Following');
           }
-          fetchProfile(); // Refresh metrics securely
-      } catch (e) {
-          toast.error('Could not update follow status');
-      }
-  }
+          fetchProfile(); 
+      } catch (e) { toast.error('Could not update follow status'); }
+  };
+
+  // Helper to resolve skill name string to ObjectId from master list
+  const getSkillId = (skillName) => {
+    const found = masterSkills.find(s => s.skill.toLowerCase() === skillName.toLowerCase());
+    return found ? found._id : null;
+  };
+
+  const handleEndorse = async (skillName) => {
+    const skillId = getSkillId(skillName);
+    if (!skillId) {
+       toast.error(`Skill "${skillName}" is not registered in our database.`);
+       return;
+    }
+    try {
+       await api.post(`/endorsment/endorse/${id}/${skillId}`);
+       toast.success(`Endorsed ${skillName}`);
+       fetchEndorsements(); // Refetch instantly
+    } catch (e) { 
+       toast.error(e.response?.data?.message || 'Failed to endorse skill'); 
+    }
+  };
+
+  const handleRemoveEndorse = async (skillName) => {
+    const skillId = getSkillId(skillName);
+    if (!skillId) return;
+    try {
+       await api.delete(`/endorsment/delete/${id}/${skillId}`);
+       toast.success(`Removed endorsement for ${skillName}`);
+       fetchEndorsements(); // Refetch instantly
+    } catch (e) { 
+       toast.error(e.response?.data?.message || 'Failed to remove endorsement'); 
+    }
+  };
+
+  const isSkillEndorsedByMe = (skillName) => {
+      const skillId = getSkillId(skillName);
+      if (!skillId) return false;
+      const endorsementDoc = endorsements.find(e => e.skill?._id === skillId || e.skill === skillId);
+      if(!endorsementDoc || !endorsementDoc.endorsers) return false;
+      return endorsementDoc.endorsers.some(endorserId => 
+          (endorserId === currentUser?._id || endorserId?._id === currentUser?._id)
+      );
+  };
+  
+  const getEndorsementCount = (skillName) => {
+      const skillId = getSkillId(skillName);
+      if (!skillId) return 0;
+      const endorsementDoc = endorsements.find(e => e.skill?._id === skillId || e.skill === skillId);
+      return endorsementDoc ? endorsementDoc.endorsers?.length || 0 : 0;
+  };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[60vh]">
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -115,36 +179,40 @@ const Profile = () => {
   if (!profile) return null;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 tracking-wide pb-20">
-      
+    <motion.div 
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
+      className="max-w-6xl mx-auto space-y-8 tracking-wide pb-20 relative z-10 transition-colors duration-300"
+    >
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content Area */}
           <div className="lg:col-span-3 space-y-6">
               
-              {/* Profile Card */}
-              <div className="glass-panel overflow-hidden relative shadow-2xl border-[#1e293b]">
-                <div className="h-40 md:h-56 bg-gradient-to-tr from-blue-700 via-indigo-800 to-purple-900 absolute top-0 w-full left-0 z-0"></div>
+              {/* Profile Card Override */}
+              <div className="glass-panel overflow-hidden relative shadow-2xl">
+                {/* Banner */}
+                <div className="h-40 md:h-56 bg-gradient-to-tr from-red-800 via-red-900 to-black absolute top-0 w-full left-0 z-0"></div>
                 
                 <div className="relative z-10 px-6 sm:px-10 pb-10 pt-20 md:pt-40 flex flex-col items-center md:items-start text-center md:text-left">
                     <img 
-                      src={profile.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=1e293b&color=3b82f6&size=200`}
+                      src={profile.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=0a0a0a&color=ef4444&size=200`}
                       alt={profile.name}
-                      className="w-36 h-36 md:w-44 md:h-44 rounded-2xl border-[6px] border-[#0b0f19] bg-[#1e293b] shadow-2xl object-cover relative z-20 -mt-10 md:mt-0"
+                      className="w-36 h-36 md:w-44 md:h-44 rounded-2xl border-[6px] shadow-[0_0_30px_rgba(239,68,68,0.2)] object-cover relative z-20 -mt-10 md:mt-0 bg-[var(--bg-main)]"
+                      style={{ borderColor: 'var(--bg-panel)' }}
                     />
                     
                     <div className="mt-5 w-full">
-                      <h1 className="text-3xl font-black text-white tracking-tight flex items-center justify-center md:justify-start">
+                      <h1 className="text-3xl font-black tracking-tight flex items-center justify-center md:justify-start" style={{ color: 'var(--text-primary)' }}>
                          {profile.name} 
-                         {profile.isPrivate && <Shield className="w-5 h-5 ml-3 text-slate-500" title="Private Profile" />}
+                         {profile.isPrivate && <Shield className="w-5 h-5 ml-3 opacity-50" title="Private Profile" />}
                       </h1>
-                      <p className="text-slate-300 text-lg mt-2 max-w-2xl font-medium leading-relaxed">
+                      <p className="text-lg mt-2 font-medium leading-relaxed max-w-2xl" style={{ color: 'var(--text-secondary)' }}>
                         {profile.bio || "Building the future on SkillHub"}
                       </p>
                       
-                      <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-4 bg-[#1e293b]/50 w-fit md:pr-6 pr-4 pl-4 py-2 rounded-xl border border-[#334155]/50">
-                         <span className="font-bold text-blue-400 hover:text-blue-300 transition-colors cursor-pointer">{profile.metrics?.connections || 0} <span className="text-slate-400 font-medium">connections</span></span>
-                         <div className="w-1.5 h-1.5 rounded-full bg-slate-600"></div>
-                         <span className="font-bold text-slate-200">{profile.metrics?.followers || 0} <span className="text-slate-400 font-medium">followers</span></span>
+                      <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-4 bg-[var(--bg-main)]/50 w-fit md:pr-6 pr-4 pl-4 py-2 rounded-xl border border-[var(--border-line)]">
+                         <span className="font-bold text-red-500 hover:text-red-400 transition-colors cursor-pointer">{profile.metrics?.connections || 0} <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>connections</span></span>
+                         <div className="w-1.5 h-1.5 rounded-full bg-[var(--border-line)]"></div>
+                         <span className="font-bold" style={{ color: 'var(--text-primary)' }}>{profile.metrics?.followers || 0} <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>followers</span></span>
                       </div>
                     </div>
 
@@ -161,17 +229,17 @@ const Profile = () => {
                             </button>
                           )}
                           {connectionStatus === 'pending' && (
-                            <button disabled className="btn-secondary h-12 px-8 flex-1 sm:flex-none opacity-100 bg-[#334155] border border-slate-600 text-slate-300">
-                              <Clock className="w-5 h-5 mr-2 text-slate-400" /> Pending...
+                            <button disabled className="btn-secondary h-12 px-8 flex-1 sm:flex-none opacity-50">
+                              <Clock className="w-5 h-5 mr-2" /> Pending...
                             </button>
                           )}
                           {connectionStatus === 'accepted' && (
-                            <button onClick={() => navigate(`/messages?userId=${id}`)} className="btn-primary h-12 px-8 flex-1 sm:flex-none shadow-blue-500/20">
+                            <button onClick={() => navigate(`/messages?userId=${id}`)} className="btn-primary h-12 px-8 flex-1 sm:flex-none shadow-red-500/20">
                               <MessageSquare className="w-5 h-5 mr-2" /> Message
                             </button>
                           )}
-                          <button onClick={handleFollowToggle} className="btn-outline h-12 px-8 flex-1 sm:flex-none border-[#334155] text-slate-300 hover:text-blue-400 hover:border-blue-500 focus:bg-blue-500/10">
-                             {isFollowing ? <><UserCheck className="w-5 h-5 mr-2 text-blue-400" /> Following</> : '+ Follow'}
+                          <button onClick={handleFollowToggle} className="btn-secondary h-12 px-8 flex-1 sm:flex-none">
+                             {isFollowing ? <><UserCheck className="w-5 h-5 mr-2 text-red-500" /> Following</> : '+ Follow'}
                           </button>
                         </>
                       )}
@@ -179,34 +247,62 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* Skills Section */}
-              <div className="glass-panel p-6 sm:p-10 border-[#1e293b]">
-                <h2 className="text-2xl font-bold text-white mb-6 border-b border-[#1e293b] pb-4">Verified Skills</h2>
+              {/* Skills & Endorsements System */}
+              <div className="glass-panel p-6 sm:p-10">
+                <h2 className="text-2xl font-black mb-6 border-b pb-4 flex items-center" style={{ color: 'var(--text-primary)', borderColor: 'var(--border-line)' }}>
+                  <Award className="w-6 h-6 mr-3 text-red-500" /> Verified Skills & Endorsements
+                </h2>
                 {profile.skills?.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {profile.skills.map((skill, index) => (
-                      <div key={index} className="bg-[#0b0f19] border border-[#1e293b] hover:border-[#334155] p-5 rounded-xl transition-colors group">
-                        <div className="flex items-center justify-between">
-                            <span className="font-bold text-slate-200 text-lg">{skill}</span>
-                            {!isOwner && connectionStatus === 'accepted' && (
-                              <button 
-                                onClick={() => endorseSkill(skill)}
-                                className="px-3 py-1.5 text-xs font-bold text-slate-400 border border-slate-600 hover:text-blue-400 hover:border-blue-400 rounded-lg transition-colors flex items-center bg-[#1e293b]/50 group-hover:bg-[#1e293b]"
-                              >
-                                <Check className="w-3.5 h-3.5 mr-1"/> Endorse
-                              </button>
-                            )}
-                        </div>
-                        <div className="flex items-center mt-3 text-sm text-slate-500 font-medium">
-                          <Award className="w-4 h-4 mr-2 text-blue-500/70" />
-                          <span>Endorsed by peers</span>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="flex flex-col gap-4">
+                    {profile.skills.map((skill, index) => {
+                      const count = getEndorsementCount(skill);
+                      const endorsedByMe = isSkillEndorsedByMe(skill);
+                      
+                      return (
+                        <motion.div 
+                          initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }}
+                          key={index} 
+                          className="group p-5 rounded-2xl flex items-center justify-between border shadow-sm transition-all"
+                          style={{ backgroundColor: 'var(--bg-main)', borderColor: 'var(--border-line)' }}
+                        >
+                          <div className="flex items-center">
+                              <div className="flex flex-col">
+                                 <span className="font-extrabold text-lg tracking-wide uppercase" style={{ color: 'var(--text-primary)' }}>{skill}</span>
+                                 {count > 0 && (
+                                   <span className="text-xs font-bold text-red-500 mt-1 uppercase tracking-widest flex items-center">
+                                     <Award className="w-3.5 h-3.5 mr-1"/> {count} Endorsement{count !== 1 ? 's' : ''}
+                                   </span>
+                                 )}
+                              </div>
+                          </div>
+                          
+                          {/* Endorse Button Logic */}
+                          {!isOwner && connectionStatus === 'accepted' && (
+                            <div className="flex items-center">
+                              {endorsedByMe ? (
+                                <button 
+                                  onClick={() => handleRemoveEndorse(skill)}
+                                  className="btn-secondary h-10 px-4 text-xs group-hover:border-red-500 group-hover:text-red-500"
+                                >
+                                  <Check className="w-4 h-4 mr-1 text-red-500"/> Endorsed
+                                </button>
+                              ) : (
+                                <button 
+                                  onClick={() => handleEndorse(skill)}
+                                  className="btn-outline h-10 px-4 text-xs"
+                                >
+                                  + Endorse
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 ) : (
-                  <div className="text-center py-10 bg-[#0b0f19]/50 rounded-xl border border-dashed border-[#334155]">
-                    <p className="text-slate-500 font-medium">No professional skills listed.</p>
+                  <div className="text-center py-12 rounded-xl border border-dashed" style={{ backgroundColor: 'var(--bg-main)', borderColor: 'var(--border-line)' }}>
+                    <p className="font-medium" style={{ color: 'var(--text-secondary)' }}>No professional skills listed.</p>
                   </div>
                 )}
               </div>
@@ -214,11 +310,13 @@ const Profile = () => {
           
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6 hidden lg:block">
-              <div className="glass-panel p-6 border-[#1e293b]">
-                  <h3 className="font-bold text-white mb-4 text-lg">Your Network</h3>
-                  <div className="text-center py-6 border border-[#334155]/50 rounded-xl bg-[#0b0f19]/50">
-                      <p className="text-sm text-slate-400 mb-4 px-4 font-medium leading-relaxed">Expand your network to unlock more career opportunities.</p>
-                      <button onClick={() => navigate('/connections')} className="text-sm font-bold text-blue-400 hover:text-blue-300 hover:underline">
+              <div className="glass-panel p-6">
+                  <h3 className="font-black mb-4 text-lg" style={{ color: 'var(--text-primary)' }}>Your Network</h3>
+                  <div className="text-center py-6 border rounded-xl" style={{ borderColor: 'var(--border-line)', backgroundColor: 'var(--bg-main)' }}>
+                      <p className="text-sm mb-4 px-4 font-medium leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                        Expand your network to unlock career opportunities.
+                      </p>
+                      <button onClick={() => navigate('/connections')} className="text-sm font-bold text-red-500 hover:text-red-400 hover:underline">
                          View connections
                       </button>
                   </div>
@@ -226,7 +324,7 @@ const Profile = () => {
           </div>
 
       </div>
-    </div>
+    </motion.div>
   );
 };
 
