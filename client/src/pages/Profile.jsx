@@ -57,7 +57,7 @@ const Profile = () => {
 
   const fetchEndorsements = async () => {
     try {
-      const { data } = await api.get(`/endorsement/get/${id}`);
+      const { data } = await api.get(`/endorsements/get/${id}`);
       if (data.statusCode === 200 || data.statusCode === 201) {
         setEndorsements(data.data || []);
       }
@@ -138,7 +138,7 @@ const Profile = () => {
        return;
     }
     try {
-       await api.post(`/endorsement/endorse/${id}/${skillId}`);
+       await api.post(`/endorsements/endorse/${id}/${skillId}`);
        toast.success(`Endorsed ${skillName}`);
        fetchEndorsements(); // Refetch instantly
     } catch (e) { 
@@ -150,7 +150,7 @@ const Profile = () => {
     const skillId = getSkillId(skillName);
     if (!skillId) return;
     try {
-       await api.delete(`/endorsement/delete/${id}/${skillId}`);
+       await api.delete(`/endorsements/delete/${id}/${skillId}`);
        toast.success(`Removed endorsement for ${skillName}`);
        fetchEndorsements(); // Refetch instantly
     } catch (e) { 
@@ -161,18 +161,21 @@ const Profile = () => {
   const isSkillEndorsedByMe = (skillName) => {
       const skillId = getSkillId(skillName);
       if (!skillId) return false;
-      const endorsementDoc = endorsements.find(e => e.skill?._id === skillId || e.skill === skillId);
-      if(!endorsementDoc || !endorsementDoc.endorsers) return false;
-      return endorsementDoc.endorsers.some(endorserId => 
-          (endorserId === currentUser?._id || endorserId?._id === currentUser?._id)
-      );
+      const currentId = currentUser?._id?.toString();
+      return endorsements.some(e => {
+          const sId = e.skill?._id?.toString() || e.skill?.toString();
+          const eId = e.endorser?._id?.toString() || e.endorser?.toString();
+          return sId === skillId && eId === currentId;
+      });
   };
   
   const getEndorsementCount = (skillName) => {
       const skillId = getSkillId(skillName);
       if (!skillId) return 0;
-      const endorsementDoc = endorsements.find(e => e.skill?._id === skillId || e.skill === skillId);
-      return endorsementDoc ? endorsementDoc.endorsers?.length || 0 : 0;
+      return endorsements.filter(e => {
+          const sId = e.skill?._id?.toString() || e.skill?.toString();
+          return sId === skillId;
+      }).length;
   };
 
   if (loading) {

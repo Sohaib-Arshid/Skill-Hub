@@ -9,10 +9,12 @@ const getFollowing = asyncHandler(async (req, res) => {
     const following = await Follow.find({
         follower: userId,
         status: "accepted"
-    }).populate("following","name profileImage")
+    }).populate("following","name profilePic")
 
-    if (following.length === 0) {
-        throw new ApiError(404, "No following found")
+    if (!following || following.length === 0) {
+        return res.status(200).json(
+            new ApiResponse(200, [], "No following found")
+        )
     }
 
     return res.status(200).json(

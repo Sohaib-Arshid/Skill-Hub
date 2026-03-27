@@ -27,8 +27,8 @@ app.use("/api/user", userrouter)
 app.use("/api/search", searchRouter)
 app.use("/api/connection", connectionrouter)
 app.use("/api/follow", followRouter)
-app.use("/api/endorsement", endorseRouter )
+app.use("/api/endorsements", endorseRouter )
 app.use("/api/skill" , skillRouter)
-app.use("/api/message" , messagerouter)
+app.use("/api/messages" , messagerouter)
 
 export default app

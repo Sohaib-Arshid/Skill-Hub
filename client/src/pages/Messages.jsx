@@ -59,7 +59,7 @@ const Messages = () => {
   const fetchMessages = async () => {
     if (!selectedUser?._id) return;
     try {
-      const { data } = await api.get(`/message/conversation/${selectedUser._id}`);
+      const { data } = await api.get(`/messages/conversation/${selectedUser._id}`);
       if (data.statusCode === 200 || data.statusCode === 201) {
         setMessages(data.data || []);
       }
@@ -74,7 +74,7 @@ const Messages = () => {
     if (!newMessage.trim() || !receiverId || receiverId === "undefined") return;
     try {
       setLoading(true);
-      await api.post(`/message/send/${receiverId}`, { content: newMessage.trim() });
+      await api.post(`/messages/send/${receiverId}`, { content: newMessage.trim() });
       setNewMessage('');
       fetchMessages();
     } catch (err) {
